@@ -21,20 +21,63 @@ function CAH() {
   }
 
   /*Begin socket output functions*/
-  this.sendState = function(player, state) {
-    player.socket.emit('update state', state);
+  this.sendState = function(socket, state) {
+    socket.emit('update state', state);
   };
 
-  this.sendAddPlayer = function(player) {
+  this.sendRemoveCard = function(socket, id) {
+    socket.emit('remove card', id);
+  }
 
+  this.sendAddPlayer = function(socket, name) {
+    socket.emit('add player', name);
+  };
+
+  this.sendSetPlayerScore = function(socket, name, score) {
+    socket.emit('set player score', (name, score));
+  };
+
+  this.sendRemovePlayer = function(socket, name) {
+    socket.emit('remove player', name);
+  };
+
+  this.sendSetBCard = function(socket, id, text) {
+    socket.emit('set bcard', (id, text));
+  };
+
+  this.sendAddWCard = function(socket, id, text) {
+    socket.emit('add wcard', (id, text));
+  };
+
+  this.sendFlipWCard = function(socket, id) {
+    socket.emit('flip wcard', id);
+  };
+
+  this.sendClearCards = function(socket) {
+    socket.emit('clear cards', 0);
+  };
+
+  this.sendSetQR = function(socket, url) {
+    socket.emit('set qr', url);
   };
   /*End socket output functions*/
 
   this.addPlayer = function(name, socket) {
     player = new Player(name, socket);
     this.players[socket] = player;
-    this.sendState(player, 0);
+    this.sendState(socket), 0);
     console.log("Player added");
+  };
+
+  this.addDisplay = function(socket) {
+    for(var sock in this.players) {
+      this.sendAddPlayer(socket, this.players[sock].name);
+      this.sendSetPlayerScore(socket, this.players[sock].name,
+        this.players[sock].score);
+    }
+    //TODO: send QR
+    //TODO: Send black card
+    //TODO: Send white cards on the table, face up
   };
 }
 
@@ -68,6 +111,7 @@ io.on('connection', function(socket){
   });
   socket.on('register display', function(){
     //Tell the game a display has joined
+    cah.addDisplay(socket);
   });
 });
 
