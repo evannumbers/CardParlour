@@ -47,9 +47,22 @@ div.black_card_container
   height: 60%;
 }
 
-div.player
+table
 {
   font-size: 1.6vw;
+  text-align: center;
+  width: 100%;
+  background-color: #CCCCCC;
+}
+
+tr:nth-child(even)
+{
+  background-color: #EEEEEE;
+}
+
+td
+{
+  width: 50%;
 }
 
 p#scoreboard
