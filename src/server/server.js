@@ -183,18 +183,21 @@ function CAH() {
 
   this.playCard = function(socket, id) {
     for(var tcard in this.players[socket].hand){
-      if(tcard.id === id){
-        var card = tcard;
+      if(this.players[socket].hand[tcard].id == id){
+        var card = this.players[socket].hand[tcard];
+        console.log(card);
         var index = this.players[socket].hand.indexOf(card);
+        console.log(index);
       }
     }
     if(this.game_state === 1 &&
-       this.players[socket] != czar &&
+       this.players[socket] != this.czar &&
        !(socket in this.played_cards)){
       this.played_cards[socket] = card;
-      this.players[socket].hand.splice(index, 1);
-      SendRemoveCard(socket, id);
-      SendAddWCard(this.display_socket, card.id, card.text);
+      this.players[socket].hand.splice(index, 1)[0];
+      this.sendRemoveCard(socket, id);
+      console.log(card.id);
+      this.sendAddWCard(this.display_socket, card.id, card.text);
     }
   }
 }
