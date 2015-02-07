@@ -278,7 +278,7 @@ io.on('connection', function(socket){
     cah.playCard(this.player, id);
   });
   socket.on('czar flip', function(id){
-    cah.sendFlipWCard(socket, id);
+    cah.sendFlipWCard(cah.display_socket, id);
   });
   socket.on('disconnect', function(){
     if(this.player != null){
