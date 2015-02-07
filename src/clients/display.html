@@ -90,7 +90,7 @@
       });
 
       socket.on('set player score', function(name, score){
-        $('score#'+name).html(score);
+        $('.scoreboard#'+name+':last-child').html(score);
       });
 
       socket.on('set bcard', function(id, text){
@@ -105,7 +105,7 @@
       });
 
       socket.on('flip wcard', function(id){
-        $('#'+id).html(card_text[id]);
+        $('card#'+id).html(card_text[id]);
       });
 
       socket.on('clear cards', function(){
