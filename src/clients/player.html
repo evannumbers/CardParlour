@@ -65,6 +65,8 @@
       var socket = io();
       var client = new Client();
 
+      var card_text = []
+
       /* Given the id of the card, find the card in the client's hand.
        * If the card does not exist, return -1.
        */
@@ -104,8 +106,16 @@
       function addCard(id, text)
       {
         /* Create the new card's HTML */
-        div = "<div id='" + id + "' class='card player_card'>" + text + "</div>";
-        $(".card_container").append(div);
+        if(id < 0)
+        {
+          card_text[id] = text;
+          var output = "<div id='" + id + "' class='card player_card'><img src='../style/img/card.png' style='width:100%;padding-top:30%;'></div>";
+        }
+        else
+        {
+          var output = "<div id='" + id + "' class='card player_card'>" + text + "</div>";
+        }
+        $(".card_container").append(output);
 
         /* Make an event handler to deselect the previous card, and select
          * the current card.
@@ -113,6 +123,11 @@
         $("#"+id).click(function() {
           if(client.isSelectable())
           {
+            if(id < 0)
+            {
+              $('#'+id).html(card_text[id]);
+            }
+            socket.emit('czar flip', (0-id));
             $("#"+client.selectedCard).css("background-color", "#eeeeee");
             client.selectedCard = id;
             $("#"+id).css("background-color", "#cccccc");
@@ -161,8 +176,8 @@
         {
           $("#scroll").css("display", "none");
           $("#startup").css("display", "block");
-        } 
-        else 
+        }
+        else
         {
           $("#scroll").css("display", "block");
           $("#startup").css("display", "none");
