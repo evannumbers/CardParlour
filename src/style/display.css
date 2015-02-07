@@ -6,7 +6,7 @@ body
 
 div.top_container
 {
-  height: 48%;
+  height: 55%;
 }
 
 div.card_container
@@ -16,6 +16,7 @@ div.card_container
 
 div.timer_container
 {
+  display:none;
 }
 
 div.player_container
