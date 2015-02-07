@@ -135,16 +135,16 @@ function CAH() {
       while(this.players[sock].hand.length < HAND_SIZE) {
         var card = this.drawWhiteCard();
         this.players[sock].hand.push(card);
-        //this.sendDeal(sock, (card.id, card.text));
+        this.sendDeal(this.players[sock].socket, (card.id, card.text));
       }
     }
   };
 
   this.startGame = function() {
     this.game_state = 1;
-    //for(sock in this.players){
-    //  this.sendState(sock, 1);
-    //}
+    for(sock in this.players){
+      this.sendState(this.players[sock].socket, 1);
+    }
     this.fillHands();
     this.black_card = this.drawBlackCard();
   };
