@@ -228,15 +228,23 @@ function CAH() {
   };
 
   this.playCard = function(player, id) {
+    if(id < 0 && player == this.czar) {
+      //The Czar selects the winner
+      for(var i in this.played_cards) {
+        if(this.played_cards[i].id == (-1*id)) {
+          i.score++;
+          this.sendSetPlayerScore(this.display_socket,i.name,i.score);
+          break;
+        }
+      }
+      this.startRound();
+    } else {
     for(var tcard in player.hand){
       if(player.hand[tcard].id == id){
         var card = player.hand[tcard];
         var index = player.hand.indexOf(card);
       }
     }
-//    if(this.game_state === 1 &&
-//       this.players[socket] != this.czar &&
-//       !(socket in this.played_cards)){
       this.played_cards[player.name] = card;
       player.hand.splice(index, 1)[0];
       this.sendState(player.socket, 3);
@@ -251,7 +259,7 @@ function CAH() {
       if(this.pending_players.length == 1) {
         this.czarPhase();
       }
-//    }
+    }
   }
 }
 
@@ -278,7 +286,7 @@ io.on('connection', function(socket){
     cah.playCard(this.player, id);
   });
   socket.on('czar flip', function(id){
-    cah.sendFlipWCard(socket, id);
+    cah.sendFlipWCard(cah.display_socket, id);
   });
   socket.on('disconnect', function(){
     if(this.player != null){
