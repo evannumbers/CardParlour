@@ -5,8 +5,10 @@ var io = require('socket.io')(http);
 app.get('/', function(req, res){
   res.sendFile('clients/player.html', {'root': '../'});
   io.on('connection', function(socket){
+    console.log("player connected");
     socket.on('join', function(name){
       //Tell game that a player joined
+      console.log("player joined");
     });
     socket.on('play', function(id){
       //Tell game that a card was played
