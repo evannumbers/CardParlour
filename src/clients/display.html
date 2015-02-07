@@ -86,7 +86,7 @@
       });
 
       socket.on('remove player', function(name){
-        $('#'+name).remove();
+        $('tr#'+name).remove();
       });
 
       socket.on('set player score', function(name, score){
