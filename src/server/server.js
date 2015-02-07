@@ -202,6 +202,7 @@ function CAH() {
        !(socket in this.played_cards)){
       this.played_cards[socket] = card;
       this.players[socket].hand.splice(index, 1)[0];
+      this.sendState(socket, 3);
       this.sendRemoveCard(socket, id);
       this.sendAddWCard(this.display_socket, card.id, card.text);
     }
