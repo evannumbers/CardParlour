@@ -20,8 +20,9 @@
   var Client = function() {
     this.name = "";
     this.state = "Not Connected";
-    this.selectedCard = -1;
+    this.selectedCard = null;
     this.hand = [];
+    this.czarHand = [];
     this.canSelect = false;
 
     this.isSelectable = function () {
@@ -135,13 +136,25 @@
         }
       }
 
+      function loadCards(hand)
+      {
+        /* Reset the container to empty */
+        $(".card_container").empty();
+
+        for(var i in hand)
+        {
+          var card = hand[i];
+          addCard(card.id, card.text);
+        }
+      }
+
       function updateStateVariables(msg)
       {
         /* Update select */
         updateSelect(msg);
 
         /* Nothing should be selected */
-        client.selectedCard = -1;
+        client.selectedCard = null;
 
         /* In state 0, the user should see the sign-in view */
         if(msg == 0)
@@ -158,11 +171,13 @@
         /* Card czar should not see their own cards */
         if(msg == 2 || msg == 4)
         {
-          $(".card_container").css("display", "none");
+          /* Show the czar hand */
+          loadCards(client.czarHand);
         }
         else
         {
-          $(".card_container").css("display", "block");
+          /* Make sure our hand is loaded */
+          loadCards(client.hand);
         }
 
         /* Update the send button */
@@ -188,7 +203,7 @@
       $('#send_card').submit(function()
       {
         /* Not yet selected */
-        if(client.selectedCard < 0) {
+        if(client.selectedCard == null) {
           return false;
         }
 
@@ -198,7 +213,7 @@
 
       /* Event handler for when the clients game state changes */
       socket.on('update state', function(msg) {
-        console.log(msg);
+
         messages = ["You are not playing", "Select a card to play",
                     "You are the card Czar, please wait...",
                     "Please wait for the card Czar to choose...",
@@ -214,18 +229,36 @@
        * into the hand, and place it in the HTML.
        */
       socket.on('deal', function(id, text) {
-        client.hand.push(new Card(id,text));
-        console.log(client.hand);
-        addCard(id, text);
+        /* Check if this is for the czar hand */
+        if(id < 0)
+        {
+          client.czarHand.push(new Card(id,text));
+          addCard(id, text);
+        }
+        else
+        {
+          client.hand.push(new Card(id,text));
+          addCard(id, text);
+        }
       });
 
       /* Event handler for when the client has successfully played a card.
        * Remove the card from the hand and HTML.
        */
       socket.on('remove card', function(id) {
+        /* Determine which hand the card is being removed from */
+        if(id < 0)
+        {
+          var hand = client.czarHand;
+        }
+        else
+        {
+          var hand = client.hand;
+        }
+
         if(id == client.selectedCard)
         {
-          client.selectedCard = -1;
+          client.selectedCard = null;
         }
 
         /* Find the location in the hand */
@@ -233,9 +266,7 @@
         if(index > -1)
         {
           /* Remove from hand */
-          console.log(client.hand);
-          client.hand.splice(index, 1);
-          console.log(client.hand);
+          hand.splice(index, 1);
 
           /* Find in HTML */
           var divMatch = "#" + id;
