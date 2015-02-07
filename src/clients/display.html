@@ -19,7 +19,7 @@
         </div>
 
         <div class = "black_card_container">
-          <div class="card" id="black">Dick Fingers</div>
+          <div class="card blackcard">Dick Fingers</div>
         </div>
       </div>
 
@@ -55,7 +55,9 @@
       var h = $("#qrcode").height();
       var qrcode = new QRCode(document.getElementById("qrcode"), {
         width : Math.min(w,h),
-        height : Math.min(w,h)
+        height : Math.min(w,h),
+        colorDark : '#222222',
+        colorLight : '#EEEEEE'
       });
       var qrText = "Not connected yet!"
 
@@ -65,7 +67,9 @@
         document.getElementById("qrcode").innerHTML = "";
         qrcode = new QRCode(document.getElementById("qrcode"), {
           width : Math.min(w,h),
-          height : Math.min(w,h)
+          height : Math.min(w,h),
+          colorDark : '#222222',
+          colorLight : '#EEEEEE'
         });
         makeCode();
       });
@@ -77,6 +81,7 @@
 
       socket.on('set qr', function(url){
         qrText = url;
+        makeCode();
       });
 
       makeCode()
