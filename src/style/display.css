@@ -1,0 +1,39 @@
+div.top_container
+{
+  height: 50%;
+}
+
+div.card_container
+{
+  height: 40%;
+}
+
+div.timer_container
+{
+  height: 10%;
+}
+
+div.player_container
+{
+  width: 30%;
+}
+
+div.middle_container
+{
+  width: 40%
+}
+
+div.qr_container
+{
+  width: 30%;
+}
+
+div.logo_container
+{
+  height: 20%;
+}
+
+div.black_card_container
+{
+  height: 80%;
+}
