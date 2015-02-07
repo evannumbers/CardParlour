@@ -34,15 +34,15 @@
   </script>
   <body>
       <div class="header_container" id="header">
-        Join the Game!
+        Welcome to the Card Parlour!
       </div>
 
       <!-- Startup screen -->
       <div id="startup" data-role="main" class="ui-content">
         <form id="get_name" action="">
-          <label for="user">First name:</label>
+          <label for="user">User Name:</label>
           <input type="text" name="user" id="user"/>
-          <button>Join</button>
+          <button>Join Game</button>
         </form>
       </div>
 
@@ -52,7 +52,7 @@
 
       <div style="display:none" class="footer" id="footer">
         <form id="send_card" action="">
-          <button id="send_button">Send</button>
+          <button id="send_button">Submit</button>
         </form>
       </div>
 
@@ -237,10 +237,11 @@
       /* Event handler for when the clients game state changes */
       socket.on('update state', function(msg) {
 
-        messages = ["You are not playing", "Select a card to play",
-                    "You are the card Czar, please wait...",
-                    "Please wait for the card Czar to choose...",
-                    "You are the card Czar, please choose a card..."];
+        messages = ["Please wait while we finish this round",
+                    "Please select a card to play",
+                    "You are the card Czar, please wait for the other players...",
+                    "Please wait for the card Czar to choose a card...",
+                    "You are the card Czar, please choose the winning card"];
 
         /* Update header with new state */
         document.getElementById("header").innerHTML = (client.name + ", "
