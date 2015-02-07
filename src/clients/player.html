@@ -65,7 +65,7 @@
        */
       function indexByCardID(id)
       {
-        for(i = 0; i = Client.hand.length; i++)
+        for(i = 0; i < Client.hand.length; i++)
         {
           card = Client.hand[i];
           if(card.id == id)
@@ -171,6 +171,7 @@
        */
       socket.on('deal', function(id, text) {
         Client.hand.push(new Card(id,text));
+        console.log(Client.hand);
         addCard(id, text);
       });
 
@@ -178,6 +179,9 @@
        * Remove the card from the hand and HTML.
        */
       socket.on('remove card', function(id) {
+        console.log("REMOVE");
+        console.log(Client.hand);
+        console.log(id);
         if(id == Client.selectedCard)
         {
           Client.selectedCard = -1;
@@ -188,10 +192,12 @@
         if(index > -1)
         {
           /* Remove from hand */
+          console.log(Client.hand);
           Client.hand.splice(index, 1);
+          console.log(Client.hand);
 
           /* Find in HTML */
-          var divMatch = "#" + cardId;
+          var divMatch = "#" + id;
           $(divMatch).remove();
         }
         else
