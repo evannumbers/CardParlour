@@ -105,7 +105,7 @@
       });
 
       socket.on('flip wcard', function(id){
-        $('card#'+id).html(card_text[id]);
+        $('.card#'+id).html(card_text[id]);
       });
 
       socket.on('clear cards', function(){
