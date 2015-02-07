@@ -37,7 +37,7 @@ function CAH() {
   }
 
   this.getCards = function() {
-    var filePath = path.join(__dirname, '../server/cah/cards/version1.txt');
+    var filePath = path.join(__dirname, '../server/cah/cards/test.txt');
     var self = this;
     fs.readFile(filePath, {encoding: 'utf-8'}, function(err, data){
       if (!err){
@@ -149,12 +149,24 @@ function CAH() {
 
   this.drawWhiteCard = function() {
     var i = Math.floor(Math.random() * this.white_deck.length);
-    return this.white_deck.splice(i, 1)[0];
+    var result = this.white_deck.splice(i, 1)[0];
+    if(this.white_deck.length == 0)
+    {
+      this.white_deck = this.white_graveyard;
+      this.white_graveyard = [];
+    }
+    return result;
   };
 
   this.drawBlackCard = function() {
     var i = Math.floor(Math.random() * this.black_deck.length);
     var c = this.black_deck.splice(i, 1)[0];
+    this.black_graveyard.push(c);
+    if(this.black_deck.length == 0)
+    {
+      this.black_deck = this.black_graveyard;
+      this.black_graveyard = [];
+    }
     if(this.display_socket != null){
       console.log(c.text);
       this.sendSetBCard(this.display_socket, c.id, c.text);
@@ -181,6 +193,9 @@ function CAH() {
 
   this.startRound = function() {
     this.sendClearCards(this.display_socket);
+    for(var c in this.played_cards){
+      this.white_graveyard.push(c);
+    }
     this.played_cards = {};
     this.pending_players = this.czar_order.slice();
     this.czar = this.chooseCzar();
