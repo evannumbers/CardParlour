@@ -7,13 +7,18 @@ var path = require('path');
 var ip = require('ip');
 
 var PORT = 1337;
+var HAND_SIZE = 10;
 
 function CAH() {
+  this.game_state = 0;
+  this.czar = null;
   this.players = {};
   this.white_deck = [];
   this.black_deck = [];
   this.white_graveyard = [];
   this.black_graveyard = [];
+  this.played_cards = {};
+  this.display_socket = null;
 
   function Card(id, text) {
     this.id = id;
@@ -59,6 +64,10 @@ function CAH() {
   }
 
   /*Begin socket output functions*/
+  this.sendDeal = function(socket, id, text) {
+    socket.emit('deal', (id, text));
+  }
+
   this.sendState = function(socket, state) {
     socket.emit('update state', state);
   };
@@ -108,6 +117,7 @@ function CAH() {
   };
 
   this.addDisplay = function(socket) {
+    this.display_socket = socket;
     for(var sock in this.players) {
       this.sendAddPlayer(socket, this.players[sock].name);
       this.sendSetPlayerScore(socket, this.players[sock].name,
@@ -118,6 +128,38 @@ function CAH() {
     //TODO: Send black card
     //TODO: Send white cards on the table, face up
   };
+
+  this.drawWhiteCard = function() {
+    var i = Math.floor(Math.random() * this.white_deck.length);
+    return this.white_deck.splice(i, 1);
+  };
+
+  this.fillHands = function() {
+    for(var sock in this.players) {
+      while(this.players[sock].hand.length < HAND_SIZE) {
+        var card = this.drawWhiteCard();
+        this.players[sock].hand.push(card);
+        this.sendDeal(sock, (card.id, card.text));
+      }
+    }
+  };
+
+  this.playCard = function(socket, id) {
+    for(var tcard in this.players[socket].hand){
+      if(tcard.id === id){
+        var card = tcard;
+        var index = this.players[socket].hand.indexOf(card);
+      }
+    }
+    if(this.game_state === 1 &&
+       this.players[socket] != czar &&
+       !(socket in this.played_cards)){
+      this.played_cards[socket] = card;
+      this.players[socket].hand.splice(index, 1);
+      SendRemoveCard(socket, id);
+      SendAddWCard(this.display_socket, card.id, card.text);
+    }
+  }
 }
 
 var cah = new CAH();
@@ -156,5 +198,5 @@ io.on('connection', function(socket){
 });
 
 http.listen(PORT, function(){
-  console.log('listening on *:3000');
+  console.log('listening on *:1337');
 });
