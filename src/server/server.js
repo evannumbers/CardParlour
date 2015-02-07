@@ -8,6 +8,12 @@ app.get('/', function(req, res){
     socket.on('join', function(name){
       //Tell game that a player joined
     });
+    socket.on('play', function(id){
+      //Tell game that a card was played
+    });
+    socket.on('czarFlip', function(id){
+      //Tell game that the czar flipped a card
+    });
     socket.on('disconnect', function(){
       //Tell game that the player left
     });
@@ -16,6 +22,9 @@ app.get('/', function(req, res){
 
 app.get('/display', function(req, res){
   res.sendFile('clients/display.html', {'root': '../'});
+  io.on('connection', function(socket){
+    //Tell the game a display joined
+  });
 });
 
 http.listen(3000, function(){
