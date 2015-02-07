@@ -90,7 +90,7 @@
       });
 
       socket.on('set player score', function(name, score){
-        $('.scoreboard#'+name+':last-child').html(score);
+        $('tr#'+name+' *:last-child').html(score);
       });
 
       socket.on('set bcard', function(id, text){
