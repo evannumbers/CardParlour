@@ -49,11 +49,12 @@ div.black_card_container
 
 div.player
 {
+  font-size: 1.6vw;
 }
 
 p#scoreboard
 {
-  font-size: 1.5vw;
+  font-size: 2vw;
 }
 
 div#qrcode

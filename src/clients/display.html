@@ -33,11 +33,6 @@
     <br>
 
     <div class = "card_container">
-      <div class="card">Cock</div>
-      <div class="card">More Cock</div>
-      <div class="card">Dick in a Box</div>
-      <div class="card">Vagina</div>
-      <div class="card">Peeeeeeeennniiisssss</div>
     </div>
 
     <br>
@@ -50,6 +45,8 @@
       var socket =  io();
 
       socket.emit('register display', 0);
+
+      /*var card_text = [];*/
 
       var w = $("#qrcode").width();
       var h = $("#qrcode").height();
@@ -98,6 +95,17 @@
       socket.on('set bcard', function(id, text){
         $('#bc').css("display", "block");
         $('#bc').html(text);
+      });
+
+      socket.on('add wcard', function(id, text){
+        card_text[id] = text;
+        output = "<div id='" + id + "' class='card'><img src='../style/img/card.png' width='50%'></div>";
+        $(".player_container").append(output);
+      });
+
+      socket.on('clear cards', function(){
+        $('card:not(blackcard)').remove();
+        card_text = [];
       });
 
       makeCode()
