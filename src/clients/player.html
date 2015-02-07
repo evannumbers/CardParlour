@@ -40,9 +40,7 @@
       </div>
 
       <!-- Gameplay screen -->
-      <div id="play" style="display:none">
-        <div class="card_container">
-        </div>
+      <div id="scroll" class="card_container" style="display:none">
       </div>
 
       <div style="display:none" class="footer" id="footer">
@@ -153,12 +151,12 @@
         var startup = document.getElementById("#startup");
         if(msg == 0)
         {
-          $("#play").css("display", "none");
+          $("#scroll").css("display", "none");
           $("#startup").css("display", "block");
         } 
         else 
         {
-          $("#play").css("display", "block");
+          $("#scroll").css("display", "block");
           $("#startup").css("display", "none");
         }
 
@@ -179,9 +177,6 @@
        * Remove the card from the hand and HTML.
        */
       socket.on('remove card', function(id) {
-        console.log("REMOVE");
-        console.log(Client.hand);
-        console.log(id);
         if(id == Client.selectedCard)
         {
           Client.selectedCard = -1;
