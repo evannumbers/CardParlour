@@ -1,7 +1,8 @@
 <html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="../style/player.css">
+    <link rel="stylesheet" href="/style/player.css">
+    <link rel="stylesheet" href="/style/default.css">
     <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
     <script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
     <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
@@ -10,11 +11,18 @@
   <canvas></canvas>
   <script>
 
+  // Card class
+  var Card = function(id, text) {
+    this.id = id;
+    this.text = text;
+  }
+
   // Client class
   var Client = {
     name: "",
     state: "Not Connected",
-    selectedCard: 0
+    selectedCard: 0,
+    hand: []
   }
 
   </script>
@@ -24,12 +32,19 @@
         Join the Game!
       </div>
 
-      <div data-role="main" class="ui-content">
+      <!-- Startup screen -->
+      <div id="#startup" data-role="main" class="ui-content">
         <form id="get_name" action="">
           <label for="user">First name:</label>
           <input type="text" name="user" id="user"/>
           <button>Join</button>
         </form>
+      </div>
+
+      <!-- Gameplay screen -->
+      <div id="#play" style="display:none"data-role="main" class="ui-content">
+        <div class="card_container">
+        </div>
       </div>
 
       <div style="display:none" id="#footer" data-role="footer">
@@ -45,14 +60,30 @@
 
     <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
     <script>
+
+      function indexByCardID(id) {
+        for(i = 0; i = Client.hand.length; i++) {
+          card = Client.hand[i];
+          if(card.id == id) {
+            return i;
+          }
+        }
+        return -1;
+      }
+
       function updateSend(msg) {
         var send = document.getElementById("#footer");
         /* In states 1 and 4, the client can select a card to play */
-        if(msg == 1 || msg == 4) {
+        if(msg == 2 || msg == 5) {
           send.style.display = 'block';
         } else {
             send.style.display = 'none';
-          }
+        }
+      }
+
+      function addCard(id, text) {
+        output = "<div id='#" + id + "' class='card'>" + text + "</div>"
+        $(".card_container").append(output);
       }
 
       var socket = io();
@@ -70,22 +101,49 @@
       /* If the client presses the send card button, send the currently
        * selected card.
        */
-      $('#send_card').submit(function(){
+      $('#send_card').submit(function() {
         socket.emit('play', Client.selectedCard);
         return false;
       });
 
-      socket.on('update state', function(msg){
-        messages = ["You are not connected", "Select a card to play",
+      socket.on('update state', function(msg) {
+        messages = ["You are not playing", "You are not connected",
+                    "Select a card to play",
                     "You are the card Czar, please wait...",
                     "Please wait for the card Czar to choose...",
                     "You are the card Czar, please choose a card..."];
 
         /* Update header with new state */
-        document.getElementById("#header").innerHTML = (Client.name + ", " + messages[msg]);
+        document.getElementById("#header").innerHTML = (Client.name + ", "
+                                                        + messages[msg]);
+
+        /* In state 1, the user should see the sign in view */
+        var play = document.getElementById("#play");
+        var startup = document.getElementById("#startup");
+        if(msg == 1) {
+          play.style.display = 'none';
+          startup.style.display = 'block';
+        } else {
+            play.style.display = 'block';
+            startup.style.display = 'none';
+        }
 
         /* Update the send button */
         updateSend(msg);
+      });
+
+      socket.on('deal', function(id, text) {
+        Client.hand.push(Card(id,text));
+        addCard(id, text);
+      });
+
+      socket.on('remove card', function(id) {
+        index = indexByCardID(id);
+        if(index > -1) {
+          Client.hand.splice(index, 1);
+        } else {
+          console.log("Card was not found.");
+        }
       });
     </script>
 
