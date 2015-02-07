@@ -142,6 +142,9 @@ function CAH() {
         break;
       }
     }
+    if(player == this.czar){
+      this.startRound();
+    }
   };
 
   this.drawWhiteCard = function() {
@@ -171,12 +174,13 @@ function CAH() {
   };
 
   this.chooseCzar = function() {
-    var ele = this.czar_order.shift();
+    var ele = this.czar_order.pop();
     this.czar_order.push(ele);
     return ele;
   }
 
   this.startRound = function() {
+    this.played_cards = {};
     this.pending_players = this.czar_order.slice();
     this.czar = this.chooseCzar();
     this.game_state = 1;
@@ -191,12 +195,26 @@ function CAH() {
     this.black_card = this.drawBlackCard();
   };
 
+  this.fillHand = function(player) {
+    while(player.hand.length < HAND_SIZE) {
+      var card = this.drawWhiteCard();
+      player.hand.push(card);
+      this.sendDeal(player.socket,
+        card.id, card.text);
+    }
+  }
+
   this.addPlayer = function(player) {
     this.players.push(player);
     //console.log(this.players);
     this.sendAddPlayer(player.socket, player.name);
     this.czar_order.push(player);
-    this.sendState(player.socket, 0);
+    if(this.game_state === 1){
+      this.fillHand(player);
+      this.sendState(player.socket, 1);
+    } else {
+      this.sendState(player.socket, 0);
+    }
     if(this.display_socket != null){
       this.sendAddPlayer(this.display_socket, player.name);
       this.sendSetPlayerScore(this.display_socket, player.name, 0);
@@ -237,7 +255,6 @@ function CAH() {
               this.players[j].score++;
               this.sendSetPlayerScore(this.display_socket,i,this.players[j].score);
               this.sendClearCards(this.display_socket);
-              this.played_cards = {};
               break;
             }
           }
