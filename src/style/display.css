@@ -38,12 +38,13 @@ div.qr_container
 
 div.logo_container
 {
-  height: 20%;
+  height: 40%;
 }
 
 div.black_card_container
 {
-  height: 80%;
+  padding-top: 5%;
+  height: 60%;
 }
 
 div#qrcode
@@ -51,4 +52,9 @@ div#qrcode
   height: 100%;
   width: 70%;
   margin: auto;
+}
+
+#logo
+{
+  height: 100%;
 }

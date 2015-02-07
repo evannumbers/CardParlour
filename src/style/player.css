@@ -2,3 +2,23 @@
 {
   margin: auto;
 }
+
+div.player_card
+{
+  margin: auto;
+  display: inline-block;
+  border-style: solid;
+  border-width: medium;
+  border-color: #000000;
+  border-radius: 25px;
+  height: 76vh;
+  width: 18vw;
+  box-shadow: 5px 5px 8px #333333;
+  background-color: #EEEEEE;
+  color: #222222;
+  text-align: left;
+  font-size: 1.5vw;
+  padding: 10vh 2vw 1vh 2vw;
+  vertical-align: top;
+  word-wrap: break-word;
+}
