@@ -236,6 +236,8 @@ function CAH() {
             if(this.players[j].name == i){
               this.players[j].score++;
               this.sendSetPlayerScore(this.display_socket,i,this.players[j].score);
+              this.sendClearCards(this.display_socket);
+              this.played_cards = {};
               break;
             }
           }
