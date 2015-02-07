@@ -104,6 +104,10 @@
         $(".card_container").append(output);
       });
 
+      socket.on('flip card', function(id){
+        $('#'+id).html(card_text[id]);
+      });
+
       socket.on('clear cards', function(){
         $('card:not(blackcard)').remove();
         card_text = [];
