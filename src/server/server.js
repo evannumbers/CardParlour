@@ -1,24 +1,38 @@
-var app = require('express')();
+var express = require('express');
+var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
 function CAH() {
-  this.players = [];
+  this.players = {};
   this.deck = [];
   this.graveyard = [];
 
-  function Player(nme, sckt) {
-    this.name = nme;
-    this.socket = sckt;
+  function Card(id, text) {
+    self.id = id;
+    self.text = text;
   }
 
+  function Player(name, socket) {
+    this.name = name;
+    this.socket = socket;
+    this.hand = [];
+    this.score = 0;
+  }
+
+  /*Begin socket output functions*/
   this.sendState = function(player, state) {
     player.socket.emit('update state', state);
   };
 
+  this.sendAddPlayer = function(player) {
+
+  };
+  /*End socket output functions*/
+
   this.addPlayer = function(name, socket) {
     player = new Player(name, socket);
-    this.players[this.players.length] = player
+    this.players[socket] = player;
     this.sendState(player, 0);
     console.log("Player added");
   };
@@ -26,6 +40,7 @@ function CAH() {
 
 var cah = new CAH();
 
+app.use('/style', express.static('../style'));
 app.get('/', function(req, res){
   res.sendFile('clients/player.html', {'root': '../'});
 
