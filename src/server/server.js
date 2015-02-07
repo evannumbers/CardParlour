@@ -174,7 +174,7 @@ function CAH() {
   };
 
   this.chooseCzar = function() {
-    var ele = this.czar_order.pop();
+    var ele = this.czar_order.shift();
     this.czar_order.push(ele);
     return ele;
   }
