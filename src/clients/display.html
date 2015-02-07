@@ -10,7 +10,7 @@
   <body>
     <div class = "top_container">
       <div class = "player_container">
-        <p>player_container</p>
+        <p id="scoreboard">Scoreboard</p>
       </div>
 
       <div class = "middle_container">
@@ -19,7 +19,7 @@
         </div>
 
         <div class = "black_card_container">
-          <div class="card blackcard">Dick Fingers</div>
+          <div class="card blackcard" id="bc" style="display:none"></div>
         </div>
       </div>
 
@@ -80,6 +80,24 @@
       socket.on('set qr', function(url){
         qrText = url;
         makeCode();
+      });
+
+      socket.on('add player', function(name){
+        output = "<div id='" + name + "' class='player'>" + name + " : 0</div>";
+        $(".player_container").append(output);
+      });
+
+      socket.on('remove player', function(name){
+        $('#'+name).remove();
+      });
+
+      socket.on('set player score', function(name, score){
+        $('#'+name).html(name+" : "+score);
+      });
+
+      socket.on('set bcard', function(id, text){
+        $('#bc').css("display", "block");
+        $('#bc').html(text);
       });
 
       makeCode()

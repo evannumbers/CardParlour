@@ -47,6 +47,15 @@ div.black_card_container
   height: 60%;
 }
 
+div.player
+{
+}
+
+p#scoreboard
+{
+  font-size: 1.5vw;
+}
+
 div#qrcode
 {
   height: 100%;
