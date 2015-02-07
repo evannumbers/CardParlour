@@ -125,7 +125,7 @@ function CAH() {
     var i = Math.floor(Math.random() * this.black_deck.length);
     var c = this.black_deck.splice(i, 1);
     if(this.display_socket != null){
-      this.SendSetBCard(this.display_socket, c.id, c.text);
+      this.sendSetBCard(this.display_socket, c.id, c.text);
     };
     return c;
   };
