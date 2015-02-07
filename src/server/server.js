@@ -35,7 +35,7 @@ function CAH() {
   }
 
   this.getCards = function() {
-    var filePath = path.join(__dirname, '../server/cah/cards/box.txt');
+    var filePath = path.join(__dirname, '../server/cah/cards/version1.txt');
     var self = this;
     fs.readFile(filePath, {encoding: 'utf-8'}, function(err, data){
       if (!err){
@@ -123,8 +123,9 @@ function CAH() {
 
   this.drawBlackCard = function() {
     var i = Math.floor(Math.random() * this.black_deck.length);
-    var c = this.black_deck.splice(i, 1);
+    var c = this.black_deck.splice(i, 1)[0];
     if(this.display_socket != null){
+      console.log(c.text);
       this.sendSetBCard(this.display_socket, c.id, c.text);
     };
     return c;
@@ -168,7 +169,6 @@ function CAH() {
     }
     var url = 'http://' + ip.address() + ':' + PORT;
     this.sendSetQR(socket, url);
-    //TODO: Send black card
     //TODO: Send white cards on the table, face up
   };
 
