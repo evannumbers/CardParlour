@@ -237,7 +237,7 @@ function CAH() {
 //    if(this.game_state === 1 &&
 //       this.players[socket] != this.czar &&
 //       !(socket in this.played_cards)){
-      this.played_cards[player.socket] = card;
+      this.played_cards[player.name] = card;
       player.hand.splice(index, 1)[0];
       this.sendState(player.socket, 3);
       this.sendRemoveCard(player.socket, id);
@@ -247,6 +247,7 @@ function CAH() {
           this.pending_players.splice(i,1);
         }
       }
+      console.log(this.played_cards);
       if(this.pending_players.length == 1) {
         this.czarPhase();
       }
