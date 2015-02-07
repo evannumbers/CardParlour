@@ -1,8 +1,44 @@
 <html>
   <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="../style/player.css">
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+    <script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    <script>
+      var socket = io();
+      $('form').submit(function(){
+        socket.emit('join', $('#user').val());
+        $("user").hide();
+        return false;
+      });
+    </script>
   </head>
   <canvas></canvas>
+  <script>
+
+  // Client class
+  var Client = {
+    init: function() {
+
+    }
+  }
+
+  </script>
   <body>
+    <div data-role="page">
+      <div data-role="header" class="ui-content">
+        Join the Game!
+      </div>
+      <div data-role="main" class="ui-content">
+        <form>
+          <label for="user">First name:</label>
+          <input type="text" name="user" id="user">
+          <button>Join</button>
+        </form>
+      </div>
+    </div>
   </body>
 </html>
