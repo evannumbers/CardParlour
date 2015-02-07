@@ -1,8 +1,8 @@
 <html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="/style/player.css">
     <link rel="stylesheet" href="/style/default.css">
+    <link rel="stylesheet" href="/style/player.css">
     <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
     <script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
     <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
@@ -91,7 +91,7 @@
         {
           $("#footer").css("display", 'block');
         }
-        else 
+        else
         {
           $("#footer").css("display", 'none');
         }
@@ -103,7 +103,7 @@
       function addCard(id, text)
       {
         /* Create the new card's HTML */
-        div = "<div id='" + id + "' class='player_card'>" + text + "</div>";
+        div = "<div id='" + id + "' class='card player_card'>" + text + "</div>";
         $(".card_container").append(div);
 
         /* Make an event handler to deselect the previous card, and select
@@ -207,10 +207,9 @@
         /* Update header with new state */
         document.getElementById("header").innerHTML = (client.name + ", "
                                                         + messages[msg]);
-
         updateStateVariables(msg);
       });
-      
+
       /* Event handler for when the client receives a card. Insert this card
        * into the hand, and place it in the HTML.
        */
