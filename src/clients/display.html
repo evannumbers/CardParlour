@@ -1,7 +1,11 @@
 <html>
   <head>
-    <link rel="stylesheet" type="text/css" href="../style/default.css">
-    <link rel="stylesheet" type="text/css" href="../style/display.css">
+    <link rel="stylesheet" type="text/css" href="/style/default.css">
+    <link rel="stylesheet" type="text/css" href="/style/display.css">
+    <script type="text/javascript" src="../style/qr/jquery.min.js"></script>
+    <script type="text/javascript" src="../style/qr/qrcode.js"></script>
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
   </head>
   <body>
     <div class = "top_container">
@@ -21,6 +25,7 @@
 
       <div class = "qr_container">
         <p>qr_container</p>
+        <div id="qrcode"></div>
       </div>
 
     </div>
@@ -36,5 +41,38 @@
     <div class = "timer_container">
       <p>timer_container</p>
     </div>
+
+    <script type="text/javascript">
+      var socket =  io();
+
+      var w = $("#qrcode").width();
+      var h = $("#qrcode").height();
+      var qrcode = new QRCode(document.getElementById("qrcode"), {
+        width : Math.min(w,h),
+        height : Math.min(w,h)
+      });
+      var qrText = "Not connected yet!"
+
+      window.addEventListener('resize', function(event){
+        w = $("#qrcode").width();
+        h = $("#qrcode").height();
+        document.getElementById("qrcode").innerHTML = "";
+        qrcode = new QRCode(document.getElementById("qrcode"), {
+          width : Math.min(w,h),
+          height : Math.min(w,h)
+        });
+        makeCode();
+      });
+
+      function makeCode () {
+        qrcode.makeCode(qrText);
+      }
+
+      socket.on('set qr', function(url){
+        qrText = url;
+      });
+
+      makeCode()
+    </script>
   </body>
 </html>
