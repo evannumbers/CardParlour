@@ -15,16 +15,19 @@ div.timer_container
 
 div.player_container
 {
+  float: left;
   width: 30%;
 }
 
 div.middle_container
 {
+  float: left;
   width: 40%
 }
 
 div.qr_container
 {
+  float: left;
   width: 30%;
 }
 
