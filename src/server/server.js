@@ -68,7 +68,7 @@ function CAH() {
   /*Begin socket output functions*/
   this.sendDeal = function(socket, id, text) {
     socket.emit('deal', (id, text));
-  }
+  };
 
   this.sendState = function(socket, state) {
     socket.emit('update state', state);
@@ -76,7 +76,7 @@ function CAH() {
 
   this.sendRemoveCard = function(socket, id) {
     socket.emit('remove card', id);
-  }
+  };
 
   this.sendAddPlayer = function(socket, name) {
     socket.emit('add player', name);
@@ -111,18 +111,8 @@ function CAH() {
   };
   /*End socket output functions*/
 
-  this.addPlayer = function(name, socket) {
-    var player = new Player(name, socket);
-    this.players[socket] = player;
-    this.sendState(socket, 0);
-    if(this.player_count == 0) { //TODO
-      this.startGame();
-    }
-    this.player_count++;
-  };
-
   this.removePlayer = function(socket) {
-    player_count--;
+    this.player_count--;
     //TODO
   };
 
@@ -145,18 +135,28 @@ function CAH() {
       while(this.players[sock].hand.length < HAND_SIZE) {
         var card = this.drawWhiteCard();
         this.players[sock].hand.push(card);
-        this.sendDeal(sock, (card.id, card.text));
+        //this.sendDeal(sock, (card.id, card.text));
       }
     }
   };
 
   this.startGame = function() {
     this.game_state = 1;
-    for(var sock in this.players){
-      this.sendState(this.sock, 1);
-    }
+    //for(sock in this.players){
+    //  this.sendState(sock, 1);
+    //}
     this.fillHands();
-    this.black_card = drawBlackCard();
+    this.black_card = this.drawBlackCard();
+  };
+
+  this.addPlayer = function(name, socket) {
+    var player = new Player(name, socket);
+    this.players[socket] = player;
+    this.sendState(socket, 0);
+    if(this.player_count == 0) { //TODO
+      this.startGame();
+    }
+    this.player_count++;
   };
 
   this.addDisplay = function(socket) {
@@ -218,7 +218,7 @@ io.on('connection', function(socket){
   });
   socket.on('disconnect', function(){
     //Tell game that the player/display left
-    
+
   });
   socket.on('register display', function(){
     //Tell the game a display has joined
