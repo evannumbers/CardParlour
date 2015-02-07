@@ -128,7 +128,6 @@
               $('#'+id).html(card_text[id]);
               socket.emit('czar flip', (0-id));
             }
-            socket.emit('czar flip', (0-id));
             $("#"+client.selectedCard).css("background-color", "#eeeeee");
             client.selectedCard = id;
             $("#"+id).css("background-color", "#cccccc");
