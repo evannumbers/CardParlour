@@ -3,9 +3,17 @@
   margin: auto;
 }
 
+body
+{
+  background-image: url("img/bg.jpg");
+  background-size: 100% 100%;
+  font-family: Helvetica, Arial;
+  font-weight: bold;
+}
+
 div.header_container
 {
-  background-color: #AA9999;
+  background-color: #CCFFCC;
 }
 
 div.card_container
