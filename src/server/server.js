@@ -8,6 +8,7 @@ var ip = require('ip');
 
 var PORT = 1337;
 var HAND_SIZE = 10;
+var MAX_PLAYERS = 10;
 
 function Player(name, socket) {
   this.name = name;
@@ -221,6 +222,11 @@ function CAH() {
   }
 
   this.addPlayer = function(player) {
+    if(this.player_count >= MAX_PLAYERS) {
+      this.sendState(player.socket, 0);
+      console.log("Max players reached; new plaer rejected");
+      return;
+    }
     this.players.push(player);
     //console.log(this.players);
     this.sendAddPlayer(player.socket, player.name);
