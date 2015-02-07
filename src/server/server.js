@@ -123,7 +123,7 @@ function CAH() {
   this.removePlayer = function(player) {
     //console.log(socket);
     this.player_count--;
-    this.sendRemovePlayer(player.socket, player.name);
+    this.sendRemovePlayer(this.display_socket, player.name);
     for(var i = 0; i < this.czar_order.length; i++){
       if(this.czar_order[i] == player){
         this.czar_order.splice(i,1);
