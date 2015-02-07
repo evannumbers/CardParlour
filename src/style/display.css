@@ -1,16 +1,15 @@
 div.top_container
 {
-  height: 50%;
+  height: 48%;
 }
 
 div.card_container
 {
-  height: 40%;
+  height: 38%;
 }
 
 div.timer_container
 {
-  height: 10%;
 }
 
 div.player_container
@@ -39,4 +38,11 @@ div.logo_container
 div.black_card_container
 {
   height: 80%;
+}
+
+div#qrcode
+{
+  height: 100%;
+  width: 50%;
+  margin: auto;
 }
