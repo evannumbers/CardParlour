@@ -67,7 +67,7 @@ function CAH() {
 
   /*Begin socket output functions*/
   this.sendDeal = function(socket, id, text) {
-    console.log(socket);
+    console.log(text);
     socket.emit('deal', id, text);
   };
 
@@ -124,7 +124,7 @@ function CAH() {
 
   this.drawWhiteCard = function() {
     var i = Math.floor(Math.random() * this.white_deck.length);
-    return this.white_deck.splice(i, 1);
+    return this.white_deck.splice(i, 1)[0];
   };
 
   this.drawBlackCard = function() {
