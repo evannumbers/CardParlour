@@ -26,7 +26,7 @@
 
   </script>
   <body>
-      <div class="header_container" id="#header">
+      <div class="header_container" id="header">
         Join the Game!
       </div>
 
@@ -40,12 +40,12 @@
       </div>
 
       <!-- Gameplay screen -->
-      <div id="#play" style="display:none">
+      <div id="play" style="display:none">
         <div class="card_container">
         </div>
       </div>
 
-      <div style="display:none" class="footer" id="#footer">
+      <div style="display:none" class="footer" id="footer">
         <form id="send_card" action="">
           <button id="send_button">Send</button>
         </form>
@@ -79,7 +79,7 @@
       }
 
       function addCard(id, text) {
-        output = "<div id='#" + id + "' class='card'>" + text + "</div>";
+        output = "<div id='" + id + "' class='card'>" + text + "</div>";
         $(".card_container").append(output);
 
         $("#"+id).click(function() {
