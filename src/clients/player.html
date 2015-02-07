@@ -17,11 +17,16 @@
   }
 
   /* Client class */
-  var Client = {
-    name: "",
-    state: "Not Connected",
-    selectedCard: -1,
-    hand: []
+  var Client = function() {
+    this.name = "";
+    this.state = "Not Connected";
+    this.selectedCard = -1;
+    this.hand = [];
+    this.canSelect = false;
+
+    this.isSelectable = function () {
+      return this.canSelect;
+    }
   }
 
   </script>
@@ -57,15 +62,16 @@
     <script>
 
       var socket = io();
+      var client = new Client();
 
       /* Given the id of the card, find the card in the client's hand.
        * If the card does not exist, return -1.
        */
       function indexByCardID(id)
       {
-        for(i = 0; i < Client.hand.length; i++)
+        for(i = 0; i < client.hand.length; i++)
         {
-          card = Client.hand[i];
+          card = client.hand[i];
           if(card.id == id)
           {
             return i;
@@ -104,10 +110,65 @@
          * the current card.
          */
         $("#"+id).click(function() {
-          $("#"+Client.selectedCard).css("background-color", "#eeeeee");
-          Client.selectedCard = id;
-          $("#"+id).css("background-color", "#cccccc");
+          if(client.isSelectable())
+          {
+            $("#"+client.selectedCard).css("background-color", "#eeeeee");
+            client.selectedCard = id;
+            $("#"+id).css("background-color", "#cccccc");
+          }
         });
+      }
+
+      /* Given the new state, determine if the user should be allowed to
+       * select a new card in this state.
+       */
+      function updateSelect(msg)
+      {
+        /* Choosing phases */
+        if(msg == 1 || msg == 4)
+        {
+          client.canSelect = true;
+        }
+        else
+        {
+          client.canSelect = false;
+        }
+      }
+
+      function updateStateVariables(msg)
+      {
+        /* Update select */
+        updateSelect(msg);
+
+        /* Nothing should be selected */
+        client.selectedCard = -1;
+
+        /* In state 0, the user should see the sign-in view */
+        if(msg == 0)
+        {
+          $("#scroll").css("display", "none");
+          $("#startup").css("display", "block");
+        } 
+        else 
+        {
+          $("#scroll").css("display", "block");
+          $("#startup").css("display", "none");
+        }
+
+        /* Card czar should not see their own cards */
+        if(msg == 2 || msg == 4)
+        {
+          $(".card_container").css("display", "none");
+        }
+        else
+        {
+          $(".card_container").css("display", "block");
+        }
+
+        /* Update the send button */
+        updateSend(msg);
+
+
       }
 
       /* At the initial loading screen, if the user submits their name,
@@ -117,7 +178,7 @@
       {
         socket.emit('join', $('#user').val());
         $("#get_name").hide(); //TODO: move this
-        Client.name = $('#user').val();
+        client.name = $('#user').val();
         return false;
       });
 
@@ -127,11 +188,11 @@
       $('#send_card').submit(function()
       {
         /* Not yet selected */
-        if(Client.selectedCard < 0) {
+        if(client.selectedCard < 0) {
           return false;
         }
 
-        socket.emit('play', Client.selectedCard);
+        socket.emit('play', client.selectedCard);
         return false;
       });
 
@@ -144,32 +205,18 @@
                     "You are the card Czar, please choose a card..."];
 
         /* Update header with new state */
-        document.getElementById("header").innerHTML = (Client.name + ", "
+        document.getElementById("header").innerHTML = (client.name + ", "
                                                         + messages[msg]);
 
-        /* In state 0, the user should see the sign in view */
-        var startup = document.getElementById("#startup");
-        if(msg == 0)
-        {
-          $("#scroll").css("display", "none");
-          $("#startup").css("display", "block");
-        } 
-        else 
-        {
-          $("#scroll").css("display", "block");
-          $("#startup").css("display", "none");
-        }
-
-        /* Update the send button */
-        updateSend(msg);
+        updateStateVariables(msg);
       });
       
       /* Event handler for when the client receives a card. Insert this card
        * into the hand, and place it in the HTML.
        */
       socket.on('deal', function(id, text) {
-        Client.hand.push(new Card(id,text));
-        console.log(Client.hand);
+        client.hand.push(new Card(id,text));
+        console.log(client.hand);
         addCard(id, text);
       });
 
@@ -177,9 +224,9 @@
        * Remove the card from the hand and HTML.
        */
       socket.on('remove card', function(id) {
-        if(id == Client.selectedCard)
+        if(id == client.selectedCard)
         {
-          Client.selectedCard = -1;
+          client.selectedCard = -1;
         }
 
         /* Find the location in the hand */
@@ -187,9 +234,9 @@
         if(index > -1)
         {
           /* Remove from hand */
-          console.log(Client.hand);
-          Client.hand.splice(index, 1);
-          console.log(Client.hand);
+          console.log(client.hand);
+          client.hand.splice(index, 1);
+          console.log(client.hand);
 
           /* Find in HTML */
           var divMatch = "#" + id;
