@@ -35,7 +35,7 @@ div.card
   word-wrap: break-word;
 }
 
-div.card#black
+div.blackcard
 {
   background-color: #222222;
   color: #FFFFFF;
