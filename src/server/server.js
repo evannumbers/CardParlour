@@ -67,7 +67,6 @@ function CAH() {
 
   /*Begin socket output functions*/
   this.sendDeal = function(socket, id, text) {
-    console.log(text);
     socket.emit('deal', id, text);
   };
 
@@ -113,12 +112,11 @@ function CAH() {
   /*End socket output functions*/
 
   this.removePlayer = function(socket) {
-    if(player_list[socket] != null){
+    console.log(socket);
+    if(this.player_list[socket] != null){
       this.player_count--;
       this.sendRemovePlayer(socket, name);
-      delete player_list[socket];
-    } else {
-      this.display_socket = null;
+      delete this.player_list[socket];
     }
   };
 
@@ -161,6 +159,10 @@ function CAH() {
     this.players[socket] = player;
     this.sendAddPlayer(socket, name);
     this.sendState(socket, 0);
+    if(this.display_socket != null){
+      this.sendAddPlayer(this.display_socket, name);
+      this.sendSetPlayerScore(this.display_socket, 0);
+    }
     if(this.player_count == 0) { //TODO
       this.startGame();
     }
@@ -225,7 +227,8 @@ io.on('connection', function(socket){
   });
   socket.on('disconnect', function(){
     //Tell game that the player/display left
-
+    //cah.removePlayer(socket);
+    //TODO: Fuck this
   });
   socket.on('register display', function(){
     //Tell the game a display has joined
