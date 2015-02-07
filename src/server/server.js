@@ -12,6 +12,7 @@ var HAND_SIZE = 10;
 function CAH() {
   this.game_state = 0;
   this.czar = null;
+  this.black_card = null;
   this.players = {};
   this.white_deck = [];
   this.black_deck = [];
@@ -19,6 +20,7 @@ function CAH() {
   this.black_graveyard = [];
   this.played_cards = {};
   this.display_socket = null;
+  this.player_count = 0;
 
   function Card(id, text) {
     this.id = id;
@@ -110,10 +112,51 @@ function CAH() {
   /*End socket output functions*/
 
   this.addPlayer = function(name, socket) {
-    player = new Player(name, socket);
+    var player = new Player(name, socket);
     this.players[socket] = player;
     this.sendState(socket, 0);
-    console.log("Player added");
+    if(this.player_count == 0) { //TODO
+      this.startGame();
+    }
+    this.player_count++;
+  };
+
+  this.removePlayer = function(socket) {
+    player_count--;
+    //TODO
+  };
+
+  this.drawWhiteCard = function() {
+    var i = Math.floor(Math.random() * this.white_deck.length);
+    return this.white_deck.splice(i, 1);
+  };
+
+  this.drawBlackCard = function() {
+    var i = Math.floor(Math.random() * this.black_deck.length);
+    var c = this.black_deck.splice(i, 1);
+    if(this.display_socket != null){
+      this.SendSetBCard(this.display_socket, c.id, c.text);
+    };
+    return c;
+  };
+
+  this.fillHands = function() {
+    for(var sock in this.players) {
+      while(this.players[sock].hand.length < HAND_SIZE) {
+        var card = this.drawWhiteCard();
+        this.players[sock].hand.push(card);
+        this.sendDeal(sock, (card.id, card.text));
+      }
+    }
+  };
+
+  this.startGame = function() {
+    this.game_state = 1;
+    for(var sock in this.players){
+      this.sendState(this.sock, 1);
+    }
+    this.fillHands();
+    this.black_card = drawBlackCard();
   };
 
   this.addDisplay = function(socket) {
@@ -127,21 +170,6 @@ function CAH() {
     this.sendSetQR(socket, url);
     //TODO: Send black card
     //TODO: Send white cards on the table, face up
-  };
-
-  this.drawWhiteCard = function() {
-    var i = Math.floor(Math.random() * this.white_deck.length);
-    return this.white_deck.splice(i, 1);
-  };
-
-  this.fillHands = function() {
-    for(var sock in this.players) {
-      while(this.players[sock].hand.length < HAND_SIZE) {
-        var card = this.drawWhiteCard();
-        this.players[sock].hand.push(card);
-        this.sendDeal(sock, (card.id, card.text));
-      }
-    }
   };
 
   this.playCard = function(socket, id) {
@@ -183,13 +211,14 @@ io.on('connection', function(socket){
   });
   socket.on('play', function(id){
     //Tell game that a card was played
+    cah.playCard(socket, id);
   });
   socket.on('czar flip', function(id){
     //Tell game that the czar flipped a card
   });
   socket.on('disconnect', function(){
     //Tell game that the player/display left
-    console.log("client disconnected");
+    
   });
   socket.on('register display', function(){
     //Tell the game a display has joined

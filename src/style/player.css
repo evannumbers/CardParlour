@@ -3,6 +3,21 @@
   margin: auto;
 }
 
+div.header_container
+{
+  height: 20%;
+  background-color: #AA9999;
+}
+
+div.card_container
+{
+  height: 50%;
+}
+
+div.footer
+{
+}
+
 div.player_card
 {
   margin: auto;
