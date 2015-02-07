@@ -42,6 +42,13 @@ function CAH() {
         data = data.split("\n");
         for(var i in data) {
           var line = data[i];
+
+          /* Ignore the empty line cause by the final newline */
+          if(line == "")
+          {
+            continue;
+          }
+
           var elements = line.split("|");
 
           var type = elements[0];
@@ -196,7 +203,6 @@ function CAH() {
       this.played_cards[socket] = card;
       this.players[socket].hand.splice(index, 1)[0];
       this.sendRemoveCard(socket, id);
-      console.log(card.id);
       this.sendAddWCard(this.display_socket, card.id, card.text);
     }
   }
