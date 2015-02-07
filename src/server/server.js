@@ -4,6 +4,9 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var fs = require('fs');
 var path = require('path');
+var ip = require('ip');
+
+var PORT = 1337;
 
 function CAH() {
   this.players = {};
@@ -100,7 +103,7 @@ function CAH() {
   this.addPlayer = function(name, socket) {
     player = new Player(name, socket);
     this.players[socket] = player;
-    this.sendState(socket), 0);
+    this.sendState(socket, 0);
     console.log("Player added");
   };
 
@@ -110,7 +113,8 @@ function CAH() {
       this.sendSetPlayerScore(socket, this.players[sock].name,
         this.players[sock].score);
     }
-    //TODO: send QR
+    var url = 'http://' + ip.address() + ':' + PORT;
+    this.sendSetQR(socket, url);
     //TODO: Send black card
     //TODO: Send white cards on the table, face up
   };
@@ -151,6 +155,6 @@ io.on('connection', function(socket){
   });
 });
 
-http.listen(3000, function(){
+http.listen(PORT, function(){
   console.log('listening on *:3000');
 });

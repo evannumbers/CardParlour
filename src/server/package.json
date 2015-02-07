@@ -4,6 +4,7 @@
   "description": "Saloon Server",
   "dependencies": {
     "express": "^4.11.2",
+    "ip": "^0.3.2",
     "socket.io": "^1.3.3"
   }
 }
