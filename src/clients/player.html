@@ -8,7 +8,6 @@
     <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
     <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
   </head>
-  <canvas></canvas>
   <script>
 
   // Card class
@@ -27,8 +26,7 @@
 
   </script>
   <body>
-    <div data-role="page">
-      <div id="#header" data-role="header" class="ui-content">
+      <div class="header_container" id="#header">
         Join the Game!
       </div>
 
@@ -42,17 +40,16 @@
       </div>
 
       <!-- Gameplay screen -->
-      <div id="#play" style="display:none"data-role="main" class="ui-content">
+      <div id="#play" style="display:none">
         <div class="card_container">
         </div>
       </div>
 
-      <div style="display:none" id="#footer" data-role="footer">
+      <div style="display:none" class="footer" id="#footer">
         <form id="send_card" action="">
           <button id="#send_button">Send</button>
         </form>
       </div>
-    </div>
 
 
 
@@ -82,11 +79,14 @@
       }
 
       function addCard(id, text) {
-        output = "<div id='#" + id + "' class='card'>" + text + "</div>"
+        output = "<div id='#" + id + "' class='card'>" + text + "</div>";
         $(".card_container").append(output);
       }
 
       var socket = io();
+
+      addCard(1, "Dick Salad");
+      addCard(2, "Peanut Butter and Dick Sandwich");
 
       /* At the initial loading screen, if the user submits their name,
        * emit a message to the server with the name
