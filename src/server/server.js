@@ -186,6 +186,7 @@ function CAH() {
   this.addPlayer = function(name, socket) {
     var player = new Player(name, socket);
     this.players[socket] = player;
+    console.log(this.players);
     this.sendAddPlayer(socket, name);
     this.czar_order.push(player);
     this.sendState(socket, 0);
@@ -193,10 +194,10 @@ function CAH() {
       this.sendAddPlayer(this.display_socket, name);
       this.sendSetPlayerScore(this.display_socket, 0);
     }
-    if(this.player_count == 0) { //TODO
+    this.player_count++;
+    if(this.player_count == 3) { //TODO
       this.startRound();
     }
-    this.player_count++;
   };
 
   this.addDisplay = function(socket) {
@@ -217,6 +218,7 @@ function CAH() {
       this.sendDeal(this.czar.socket,(-1) * this.played_cards[index].id,
         this.played_cards[index].text);
     }
+    this.game_state = 2;
   };
 
   this.playCard = function(socket, id) {

@@ -11,6 +11,7 @@
     <div class = "top_container">
       <div class = "player_container">
         <p id="scoreboard">Scoreboard</p>
+        <table class="scoreboard"></table>
       </div>
 
       <div class = "middle_container">
@@ -80,8 +81,8 @@
       });
 
       socket.on('add player', function(name){
-        output = "<div id='" + name + "' class='player'>" + name + " : 0</div>";
-        $(".player_container").append(output);
+        output = "<tr id='" + name + "'><td>" + name + "</td><td>0</td></tr>";
+        $(".scoreboard").append(output);
       });
 
       socket.on('remove player', function(name){
@@ -89,7 +90,7 @@
       });
 
       socket.on('set player score', function(name, score){
-        $('#'+name).html(name+" : "+score);
+        $('score#'+name).html(score);
       });
 
       socket.on('set bcard', function(id, text){
