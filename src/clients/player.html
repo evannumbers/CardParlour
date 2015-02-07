@@ -24,6 +24,7 @@
     this.hand = [];
     this.czarHand = [];
     this.canSelect = false;
+    this.isCzar = false;
 
     this.isSelectable = function () {
       return this.canSelect;
@@ -153,9 +154,6 @@
 
       function loadCards(hand)
       {
-        /* Reset the container to empty */
-        $(".card_container").empty();
-
         for(var i in hand)
         {
           var card = hand[i];
@@ -183,8 +181,15 @@
           $("#startup").css("display", "none");
         }
 
+        /* Reset the container to empty */
+        $(".card_container").empty();
+
         /* Card czar should not see their own cards */
-        if(msg == 2 || msg == 4)
+        if(msg == 2)
+        {
+          return;
+        }
+        else if(msg == 4)
         {
           /* Show the czar hand */
           loadCards(client.czarHand);
@@ -217,6 +222,9 @@
        */
       $('#send_card').submit(function()
       {
+        /* Reset Czar hand */
+        client.czarHand = [];
+
         /* Not yet selected */
         if(client.selectedCard == null) {
           return false;
@@ -237,6 +245,17 @@
         /* Update header with new state */
         document.getElementById("header").innerHTML = (client.name + ", "
                                                         + messages[msg]);
+
+        /* Check if we are the czar */
+        if(msg == 2 || msg == 4)
+        {
+          client.isCzar = true;
+        }
+        else
+        {
+          client.isCzar = false;
+        }
+
         updateStateVariables(msg);
       });
 
@@ -253,7 +272,10 @@
         else
         {
           client.hand.push(new Card(id,text));
-          addCard(id, text);
+          if(!client.isCzar)
+          {
+            addCard(id, text);
+          }
         }
       });
 
