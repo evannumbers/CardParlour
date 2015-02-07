@@ -21,6 +21,8 @@ function CAH() {
   this.played_cards = {};
   this.display_socket = null;
   this.player_count = 0;
+  this.czar_order = [];
+  this.pending_players = [];
 
   function Card(id, text) {
     this.id = id;
@@ -120,9 +122,17 @@ function CAH() {
 
   this.removePlayer = function(socket) {
     console.log(socket);
-    if(this.player_list[socket] != null){
+    if(this.players[socket] != null){
       this.player_count--;
       this.sendRemovePlayer(socket, name);
+      czar_list.find(function(element, index, array){
+        array.splice(index, 1);
+      });
+      for(var i = 0; i < pending_players.length; i++){
+        if(pending_players[i] == this.players[socket]){
+          pending_players.splice(i,1);
+        }
+      }
       delete this.player_list[socket];
     }
   };
@@ -152,10 +162,22 @@ function CAH() {
     }
   };
 
-  this.startGame = function() {
+  this.chooseCzar = function() {
+    var ele = this.czar_order.pop();
+    this.czar_order.push(ele);
+    return ele;
+  }
+
+  this.startRound = function() {
+    this.pending_players = this.czar_order.slice();
+    this.czar = this.chooseCzar();
     this.game_state = 1;
     for(sock in this.players){
-      this.sendState(this.players[sock].socket, 1);
+      if(this.players[sock] == this.czar){
+        this.sendState(this.players[sock].socket, 2);
+      } else {
+        this.sendState(this.players[sock].socket, 1);
+      }
     }
     this.fillHands();
     this.black_card = this.drawBlackCard();
@@ -165,13 +187,14 @@ function CAH() {
     var player = new Player(name, socket);
     this.players[socket] = player;
     this.sendAddPlayer(socket, name);
+    this.czar_order.push(player);
     this.sendState(socket, 0);
     if(this.display_socket != null){
       this.sendAddPlayer(this.display_socket, name);
       this.sendSetPlayerScore(this.display_socket, 0);
     }
     if(this.player_count == 0) { //TODO
-      this.startGame();
+      this.startRound();
     }
     this.player_count++;
   };
@@ -188,24 +211,38 @@ function CAH() {
     //TODO: Send white cards on the table, face up
   };
 
+  this.czarPhase = function() {
+    this.sendState(this.czar.socket, 4);
+    for(var index in this.played_cards){
+      this.sendDeal(this.czar.socket,(-1) * this.played_cards[index].id,
+        this.played_cards[index].text);
+    }
+  };
+
   this.playCard = function(socket, id) {
     for(var tcard in this.players[socket].hand){
       if(this.players[socket].hand[tcard].id == id){
         var card = this.players[socket].hand[tcard];
-        console.log(card);
         var index = this.players[socket].hand.indexOf(card);
-        console.log(index);
       }
     }
-    if(this.game_state === 1 &&
-       this.players[socket] != this.czar &&
-       !(socket in this.played_cards)){
+//    if(this.game_state === 1 &&
+//       this.players[socket] != this.czar &&
+//       !(socket in this.played_cards)){
       this.played_cards[socket] = card;
       this.players[socket].hand.splice(index, 1)[0];
       this.sendState(socket, 3);
       this.sendRemoveCard(socket, id);
       this.sendAddWCard(this.display_socket, card.id, card.text);
-    }
+      for(var i = 0; i < pending_players.length; i++){
+        if(pending_players[i] == this.players[socket]){
+          pending_players.splice(i,1);
+        }
+      }
+      if(pending_players.length == 0) {
+        this.czarPhase();
+      }
+//    }
   }
 }
 
