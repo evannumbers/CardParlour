@@ -232,8 +232,13 @@ function CAH() {
       //The Czar selects the winner
       for(var i in this.played_cards) {
         if(this.played_cards[i].id == (-1*id)) {
-          i.score++;
-          this.sendSetPlayerScore(this.display_socket,i.name,i.score);
+          for(j in this.players){
+            if(this.players[j].name == i){
+              this.players[j].score++;
+              this.sendSetPlayerScore(this.display_socket,i,this.players[j].score);
+              break;
+            }
+          }
           break;
         }
       }
