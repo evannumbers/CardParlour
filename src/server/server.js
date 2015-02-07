@@ -37,7 +37,7 @@ function CAH() {
   }
 
   this.getCards = function() {
-    var filePath = path.join(__dirname, '../server/cah/cards/test.txt');
+    var filePath = path.join(__dirname, '../server/cah/cards/combo.txt');
     var self = this;
     fs.readFile(filePath, {encoding: 'utf-8'}, function(err, data){
       if (!err){
