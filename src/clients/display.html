@@ -19,12 +19,12 @@
         </div>
 
         <div class = "black_card_container">
-          <p>black_card_container</p>
+          <div class="card" id="black">Dick Fingers</div>
         </div>
       </div>
 
       <div class = "qr_container">
-        <p>qr_container</p>
+        <p id="qr_label"><p>
         <div id="qrcode"></div>
       </div>
 
@@ -33,7 +33,11 @@
     <br>
 
     <div class = "card_container">
-      <p>card_container</p>
+      <div class="card">Cock</div>
+      <div class="card">More Cock</div>
+      <div class="card">Dick in a Box</div>
+      <div class="card">Vagina</div>
+      <div class="card">Peeeeeeeennniiisssss</div>
     </div>
 
     <br>
@@ -44,6 +48,8 @@
 
     <script type="text/javascript">
       var socket =  io();
+
+      socket.emit('register display', 0);
 
       var w = $("#qrcode").width();
       var h = $("#qrcode").height();
@@ -66,6 +72,7 @@
 
       function makeCode () {
         qrcode.makeCode(qrText);
+        $("#qr_label").text(qrText);
       }
 
       socket.on('set qr', function(url){

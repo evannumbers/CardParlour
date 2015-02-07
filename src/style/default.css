@@ -1,5 +1,7 @@
 body
 {
+  font-family: Helvetica, Arial;
+  font-weight: bold;
 }
 
 body > *
@@ -12,4 +14,29 @@ body > *
 div
 {
   text-align: center;
+}
+
+div.card
+{
+  margin: auto;
+  display: inline-block;
+  border-style: solid;
+  border-width: medium;
+  border-color: #000000;
+  border-radius: 25px;
+  height: 19vh;
+  width: 8.5vw;
+  box-shadow: 5px 5px 8px #999999;
+  color: #000000;
+  text-align: left;
+  font-size: 1.5vw;
+  padding: 5vh 0.5vw 1vh 0.5vw;
+  vertical-align: top;
+  word-wrap: break-word;
+}
+
+div.card#black
+{
+  background-color: #222222;
+  color: #FFFFFF;
 }
