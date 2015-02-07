@@ -67,6 +67,7 @@ function CAH() {
 
   /*Begin socket output functions*/
   this.sendDeal = function(socket, id, text) {
+    console.log(socket);
     socket.emit('deal', id, text);
   };
 
@@ -112,8 +113,13 @@ function CAH() {
   /*End socket output functions*/
 
   this.removePlayer = function(socket) {
-    this.player_count--;
-    //TODO
+    if(player_list[socket] != null){
+      this.player_count--;
+      this.sendRemovePlayer(socket, name);
+      delete player_list[socket];
+    } else {
+      this.display_socket = null;
+    }
   };
 
   this.drawWhiteCard = function() {
@@ -153,6 +159,7 @@ function CAH() {
   this.addPlayer = function(name, socket) {
     var player = new Player(name, socket);
     this.players[socket] = player;
+    this.sendAddPlayer(socket, name);
     this.sendState(socket, 0);
     if(this.player_count == 0) { //TODO
       this.startGame();
