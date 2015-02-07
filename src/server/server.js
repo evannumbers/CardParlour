@@ -9,11 +9,18 @@ var ip = require('ip');
 var PORT = 1337;
 var HAND_SIZE = 10;
 
+function Player(name, socket) {
+  this.name = name;
+  this.socket = socket;
+  this.hand = [];
+  this.score = 0;
+}
+
 function CAH() {
   this.game_state = 0;
   this.czar = null;
   this.black_card = null;
-  this.players = {};
+  this.players = [];
   this.white_deck = [];
   this.black_deck = [];
   this.white_graveyard = [];
@@ -27,13 +34,6 @@ function CAH() {
   function Card(id, text) {
     this.id = id;
     this.text = text;
-  }
-
-  function Player(name, socket) {
-    this.name = name;
-    this.socket = socket;
-    this.hand = [];
-    this.score = 0;
   }
 
   this.getCards = function() {
@@ -120,20 +120,27 @@ function CAH() {
   };
   /*End socket output functions*/
 
-  this.removePlayer = function(socket) {
-    console.log(socket);
-    if(this.players[socket] != null){
-      this.player_count--;
-      this.sendRemovePlayer(socket, name);
-      czar_list.find(function(element, index, array){
-        array.splice(index, 1);
-      });
-      for(var i = 0; i < pending_players.length; i++){
-        if(pending_players[i] == this.players[socket]){
-          pending_players.splice(i,1);
-        }
+  this.removePlayer = function(player) {
+    //console.log(socket);
+    this.player_count--;
+    this.sendRemovePlayer(player.socket, player.name);
+    for(var i = 0; i < this.czar_order.length; i++){
+      if(this.czar_order[i] == player){
+        this.czar_order.splice(i,1);
+        break;
       }
-      delete this.player_list[socket];
+    }
+    for(var i = 0; i < this.pending_players.length; i++){
+      if(this.pending_players[i] == player){
+        this.pending_players.splice(i,1);
+        break;
+      }
+    }
+    for(var i = 0; i < this.players.length; i++){
+      if(this.players[i] == player){
+        this.players.splice(i,1);
+        break;
+      }
     }
   };
 
@@ -153,11 +160,12 @@ function CAH() {
   };
 
   this.fillHands = function() {
-    for(var sock in this.players) {
-      while(this.players[sock].hand.length < HAND_SIZE) {
+    for(var player in this.players) {
+      while(this.players[player].hand.length < HAND_SIZE) {
         var card = this.drawWhiteCard();
-        this.players[sock].hand.push(card);
-        this.sendDeal(this.players[sock].socket, card.id, card.text);
+        this.players[player].hand.push(card);
+        this.sendDeal(this.players[player].socket,
+          card.id, card.text);
       }
     }
   };
@@ -172,27 +180,26 @@ function CAH() {
     this.pending_players = this.czar_order.slice();
     this.czar = this.chooseCzar();
     this.game_state = 1;
-    for(sock in this.players){
-      if(this.players[sock] == this.czar){
-        this.sendState(this.players[sock].socket, 2);
+    for(player in this.players){
+      if(this.players[player] == this.czar){
+        this.sendState(this.players[player].socket, 2);
       } else {
-        this.sendState(this.players[sock].socket, 1);
+        this.sendState(this.players[player].socket, 1);
       }
     }
     this.fillHands();
     this.black_card = this.drawBlackCard();
   };
 
-  this.addPlayer = function(name, socket) {
-    var player = new Player(name, socket);
-    this.players[socket] = player;
-    console.log(this.players);
-    this.sendAddPlayer(socket, name);
+  this.addPlayer = function(player) {
+    this.players.push(player);
+    //console.log(this.players);
+    this.sendAddPlayer(player.socket, player.name);
     this.czar_order.push(player);
-    this.sendState(socket, 0);
+    this.sendState(player.socket, 0);
     if(this.display_socket != null){
-      this.sendAddPlayer(this.display_socket, name);
-      this.sendSetPlayerScore(this.display_socket, 0);
+      this.sendAddPlayer(this.display_socket, player.name);
+      this.sendSetPlayerScore(this.display_socket, player.name, 0);
     }
     this.player_count++;
     if(this.player_count == 3) { //TODO
@@ -202,10 +209,9 @@ function CAH() {
 
   this.addDisplay = function(socket) {
     this.display_socket = socket;
-    for(var sock in this.players) {
-      this.sendAddPlayer(socket, this.players[sock].name);
-      this.sendSetPlayerScore(socket, this.players[sock].name,
-        this.players[sock].score);
+    for(var player in this.players) {
+      this.sendAddPlayer(socket, player.name);
+      this.sendSetPlayerScore(socket, player.name, player.score);
     }
     var url = 'http://' + ip.address() + ':' + PORT;
     this.sendSetQR(socket, url);
@@ -221,27 +227,27 @@ function CAH() {
     this.game_state = 2;
   };
 
-  this.playCard = function(socket, id) {
-    for(var tcard in this.players[socket].hand){
-      if(this.players[socket].hand[tcard].id == id){
-        var card = this.players[socket].hand[tcard];
-        var index = this.players[socket].hand.indexOf(card);
+  this.playCard = function(player, id) {
+    for(var tcard in player.hand){
+      if(player.hand[tcard].id == id){
+        var card = player.hand[tcard];
+        var index = player.hand.indexOf(card);
       }
     }
 //    if(this.game_state === 1 &&
 //       this.players[socket] != this.czar &&
 //       !(socket in this.played_cards)){
-      this.played_cards[socket] = card;
-      this.players[socket].hand.splice(index, 1)[0];
-      this.sendState(socket, 3);
-      this.sendRemoveCard(socket, id);
+      this.played_cards[player.socket] = card;
+      player.hand.splice(index, 1)[0];
+      this.sendState(player.socket, 3);
+      this.sendRemoveCard(player.socket, id);
       this.sendAddWCard(this.display_socket, card.id, card.text);
-      for(var i = 0; i < pending_players.length; i++){
-        if(pending_players[i] == this.players[socket]){
-          pending_players.splice(i,1);
+      for(var i = 0; i < this.pending_players.length; i++){
+        if(this.pending_players[i] == player){
+          this.pending_players.splice(i,1);
         }
       }
-      if(pending_players.length == 0) {
+      if(this.pending_players.length == 1) {
         this.czarPhase();
       }
 //    }
@@ -264,23 +270,21 @@ app.get('/display', function(req, res){
 io.on('connection', function(socket){
   console.log("client connected");
   socket.on('join', function(name){
-    //Tell game that a player joined
-    cah.addPlayer(name, socket);
+    this.player = new Player(name, socket);
+    cah.addPlayer(this.player);
   });
   socket.on('play', function(id){
-    //Tell game that a card was played
-    cah.playCard(socket, id);
+    cah.playCard(this.player, id);
   });
   socket.on('czar flip', function(id){
-    //Tell game that the czar flipped a card
+    cah.sendFlipWCard(socket, id);
   });
   socket.on('disconnect', function(){
-    //Tell game that the player/display left
-    //cah.removePlayer(socket);
-    //TODO: Fuck this
+    if(this.player != null){
+      cah.removePlayer(this.player);
+    }
   });
   socket.on('register display', function(){
-    //Tell the game a display has joined
     cah.addDisplay(socket);
   });
 });
