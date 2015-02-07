@@ -104,7 +104,7 @@
         $(".card_container").append(output);
       });
 
-      socket.on('flip card', function(id){
+      socket.on('flip wcard', function(id){
         $('#'+id).html(card_text[id]);
       });
 
