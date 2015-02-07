@@ -101,7 +101,7 @@
       socket.on('add wcard', function(id, text){
         card_text[id] = text;
         output = "<div id='" + id + "' class='card'><img src='../style/img/card.png' style='width:100%;padding-top:30%;'></div>";
-        $(".player_container").append(output);
+        $(".card_container").append(output);
       });
 
       socket.on('clear cards', function(){
