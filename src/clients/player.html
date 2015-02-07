@@ -10,13 +10,13 @@
   </head>
   <script>
 
-  // Card class
+  /* Card class */
   var Card = function(id, text) {
     this.id = id;
     this.text = text;
   }
 
-  // Client class
+  /* Client class */
   var Client = {
     name: "",
     state: "Not Connected",
@@ -58,30 +58,53 @@
     <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
     <script>
 
-      function indexByCardID(id) {
-        for(i = 0; i = Client.hand.length; i++) {
+      var socket = io();
+
+      /* Given the id of the card, find the card in the client's hand.
+       * If the card does not exist, return -1.
+       */
+      function indexByCardID(id)
+      {
+        for(i = 0; i = Client.hand.length; i++)
+        {
           card = Client.hand[i];
-          if(card.id == id) {
+          if(card.id == id)
+          {
             return i;
           }
         }
         return -1;
       }
 
-      function updateSend(msg) {
-        var send = document.getElementById("#footer");
-        /* In states 1 and 4, the client can select a card to play */
-        if(msg == 2 || msg == 5) {
-          send.style.display = 'block';
-        } else {
-            // send.style.display = 'none';
+      /* Given the update state message, hide or show the send button depending
+       * on the new state.
+       */
+      function updateSend(msg)
+      {
+        var send = document.getElementById("footer");
+        /* In states 2 and 5, the client can select a card to play */
+        if(msg == 2 || msg == 5)
+        {
+          $("#footer").css("display", 'block');
+        }
+        else 
+        {
+          $("#footer").css("display", 'none');
         }
       }
 
-      function addCard(id, text) {
-        output = "<div id='" + id + "' class='card'>" + text + "</div>";
-        $(".card_container").append(output);
+      /* Given the id and text for a card, add this card object to the HTML
+       * and create a event handler for the card to determine selected card.
+       */
+      function addCard(id, text)
+      {
+        /* Create the new card's HTML */
+        div = "<div id='" + id + "' class='card'>" + text + "</div>";
+        $(".card_container").append(div);
 
+        /* Make an event handler to deselect the previous card, and select
+         * the current card.
+         */
         $("#"+id).click(function() {
           $("#"+Client.selectedCard).css("background-color", "#eeeeee");
           Client.selectedCard = id;
@@ -89,17 +112,13 @@
         });
       }
 
-      var socket = io();
-
-      addCard(1, "Dick Salad");
-      addCard(2, "Peanut Butter and Dick Sandwich");
-
       /* At the initial loading screen, if the user submits their name,
        * emit a message to the server with the name
        */
-      $('#get_name').submit(function(){
+      $('#get_name').submit(function()
+      {
         socket.emit('join', $('#user').val());
-        $("#get_name").hide();
+        $("#get_name").hide(); //TODO: move this
         Client.name = $('#user').val();
         return false;
       });
@@ -107,7 +126,8 @@
       /* If the client presses the send card button, send the currently
        * selected card.
        */
-      $('#send_card').submit(function() {
+      $('#send_card').submit(function()
+      {
         /* Not yet selected */
         if(Client.selectedCard < 0) {
           return false;
@@ -117,6 +137,7 @@
         return false;
       });
 
+      /* Event handler for when the clients game state changes */
       socket.on('update state', function(msg) {
         messages = ["You are not playing", "You are not connected",
                     "Select a card to play",
@@ -129,38 +150,54 @@
                                                         + messages[msg]);
 
         /* In state 1, the user should see the sign in view */
-        var play = document.getElementById("#play");
+        $("#play").css("display", "none");
         var startup = document.getElementById("#startup");
-        if(msg == 1) {
-          play.style.display = 'none';
-          startup.style.display = 'block';
-        } else {
-            play.style.display = 'block';
-            startup.style.display = 'none';
+        if(msg == 1)
+        {
+          $("#play").css("display", "none");
+          $("#startup").css("display", "block");
+        } 
+        else 
+        {
+          $("#play").css("display", "block");
+          $("#startup").css("display", "none");
         }
 
         /* Update the send button */
         updateSend(msg);
       });
-
+      
+      /* Event handler for when the client receives a card. Insert this card
+       * into the hand, and place it in the HTML.
+       */
       socket.on('deal', function(id, text) {
         Client.hand.push(Card(id,text));
-
         addCard(id, text);
       });
 
+      /* Event handler for when the client has successfully played a card.
+       * Remove the card from the hand and HTML.
+       */
       socket.on('remove card', function(id) {
-        if(id == Client.selectedCard) {
+        if(id == Client.selectedCard)
+        {
           Client.selectedCard = -1;
         }
+
+        /* Find the location in the hand */
         index = indexByCardID(id);
-        if(index > -1) {
-          var cardId = Client.hand[index].id;
+        if(index > -1)
+        {
+          /* Remove from hand */
           Client.hand.splice(index, 1);
+
+          /* Find in HTML */
           var divMatch = "#" + cardId;
           $(divMatch).remove();
-        } else {
-          console.log("Card was not found.");
+        }
+        else
+        {
+          console.log("Card does not exist.");
         }
       });
     </script>
