@@ -24,13 +24,13 @@ div.card
   border-width: medium;
   border-color: #000000;
   border-radius: 25px;
-  height: 19vh;
+  height: 21vh;
   width: 8.5vw;
   box-shadow: 5px 5px 8px #333333;
   background-color: #EEEEEE;
   color: #222222;
   text-align: left;
-  font-size: 1.5vw;
+  font-size: 1.4vw;
   padding: 5vh 0.5vw 1vh 0.5vw;
   vertical-align: top;
   word-wrap: break-word;
