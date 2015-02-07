@@ -180,6 +180,7 @@ function CAH() {
   }
 
   this.startRound = function() {
+    this.sendClearCards(this.display_socket);
     this.played_cards = {};
     this.pending_players = this.czar_order.slice();
     this.czar = this.chooseCzar();
@@ -254,7 +255,6 @@ function CAH() {
             if(this.players[j].name == i){
               this.players[j].score++;
               this.sendSetPlayerScore(this.display_socket,i,this.players[j].score);
-              this.sendClearCards(this.display_socket);
               break;
             }
           }
