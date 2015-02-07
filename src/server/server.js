@@ -67,7 +67,7 @@ function CAH() {
 
   /*Begin socket output functions*/
   this.sendDeal = function(socket, id, text) {
-    socket.emit('deal', (id, text));
+    socket.emit('deal', id, text);
   };
 
   this.sendState = function(socket, state) {
@@ -83,7 +83,7 @@ function CAH() {
   };
 
   this.sendSetPlayerScore = function(socket, name, score) {
-    socket.emit('set player score', (name, score));
+    socket.emit('set player score', name, score);
   };
 
   this.sendRemovePlayer = function(socket, name) {
@@ -91,11 +91,11 @@ function CAH() {
   };
 
   this.sendSetBCard = function(socket, id, text) {
-    socket.emit('set bcard', (id, text));
+    socket.emit('set bcard', id, text);
   };
 
   this.sendAddWCard = function(socket, id, text) {
-    socket.emit('add wcard', (id, text));
+    socket.emit('add wcard', id, text);
   };
 
   this.sendFlipWCard = function(socket, id) {
@@ -136,7 +136,7 @@ function CAH() {
       while(this.players[sock].hand.length < HAND_SIZE) {
         var card = this.drawWhiteCard();
         this.players[sock].hand.push(card);
-        this.sendDeal(this.players[sock].socket, (card.id, card.text));
+        this.sendDeal(this.players[sock].socket, card.id, card.text);
       }
     }
   };
