@@ -42,6 +42,13 @@ function CAH() {
         data = data.split("\n");
         for(var i in data) {
           var line = data[i];
+
+          /* Ignore the empty line cause by the final newline */
+          if(line == "")
+          {
+            continue;
+          }
+
           var elements = line.split("|");
 
           var type = elements[0];
@@ -187,12 +194,12 @@ function CAH() {
       }
     }
     if(this.game_state === 1 &&
-       this.players[socket] != czar &&
+       this.players[socket] != this.czar &&
        !(socket in this.played_cards)){
       this.played_cards[socket] = card;
       this.players[socket].hand.splice(index, 1);
-      SendRemoveCard(socket, id);
-      SendAddWCard(this.display_socket, card.id, card.text);
+      this.sendRemoveCard(socket, id);
+      this.sendAddWCard(this.display_socket, card.id, card.text);
     }
   }
 }
