@@ -1,6 +1,7 @@
 <html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../style/player.css">
     <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
     <script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
     <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
@@ -12,7 +13,8 @@
   // Client class
   var Client = {
     name: "",
-    state: "Not Connected"
+    state: "Not Connected",
+    selectedCard: 0
   }
 
   </script>
@@ -21,6 +23,7 @@
       <div id="#header" data-role="header" class="ui-content">
         Join the Game!
       </div>
+
       <div data-role="main" class="ui-content">
         <form id="get_name" action="">
           <label for="user">First name:</label>
@@ -28,18 +31,61 @@
           <button>Join</button>
         </form>
       </div>
+
+      <div style="display:none" id="#footer" data-role="footer">
+        <form id="send_card" action="">
+          <button id="#send_button">Send</button>
+        </form>
+      </div>
     </div>
+
+
+
+
 
     <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
     <script>
+      function updateSend(msg) {
+        var send = document.getElementById("#footer");
+        /* In states 1 and 4, the client can select a card to play */
+        if(msg == 1 || msg == 4) {
+          send.style.display = 'block';
+        } else {
+            send.style.display = 'none';
+          }
+      }
+
       var socket = io();
-      $('form').submit(function(){
+
+      /* At the initial loading screen, if the user submits their name,
+       * emit a message to the server with the name
+       */
+      $('#get_name').submit(function(){
         socket.emit('join', $('#user').val());
         $("#get_name").hide();
         Client.name = $('#user').val();
-
-        // $("#header").html(Client.name + ", " + Client.state);
         return false;
+      });
+
+      /* If the client presses the send card button, send the currently
+       * selected card.
+       */
+      $('#send_card').submit(function(){
+        socket.emit('play', Client.selectedCard);
+        return false;
+      });
+
+      socket.on('update state', function(msg){
+        messages = ["You are not connected", "Select a card to play",
+                    "You are the card Czar, please wait...",
+                    "Please wait for the card Czar to choose...",
+                    "You are the card Czar, please choose a card..."];
+
+        /* Update header with new state */
+        document.getElementById("#header").innerHTML = (Client.name + ", " + messages[msg]);
+
+        /* Update the send button */
+        updateSend(msg);
       });
     </script>
 
