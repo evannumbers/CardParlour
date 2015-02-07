@@ -35,7 +35,7 @@ function CAH() {
   }
 
   this.getCards = function() {
-    var filePath = path.join(__dirname, '../server/cah/cards/box.txt');
+    var filePath = path.join(__dirname, '../server/cah/cards/version1.txt');
     var self = this;
     fs.readFile(filePath, {encoding: 'utf-8'}, function(err, data){
       if (!err){
@@ -67,7 +67,7 @@ function CAH() {
 
   /*Begin socket output functions*/
   this.sendDeal = function(socket, id, text) {
-    socket.emit('deal', (id, text));
+    socket.emit('deal', id, text);
   };
 
   this.sendState = function(socket, state) {
@@ -83,7 +83,7 @@ function CAH() {
   };
 
   this.sendSetPlayerScore = function(socket, name, score) {
-    socket.emit('set player score', (name, score));
+    socket.emit('set player score', name, score);
   };
 
   this.sendRemovePlayer = function(socket, name) {
@@ -91,11 +91,11 @@ function CAH() {
   };
 
   this.sendSetBCard = function(socket, id, text) {
-    socket.emit('set bcard', (id, text));
+    socket.emit('set bcard', id, text);
   };
 
   this.sendAddWCard = function(socket, id, text) {
-    socket.emit('add wcard', (id, text));
+    socket.emit('add wcard', id, text);
   };
 
   this.sendFlipWCard = function(socket, id) {
@@ -123,8 +123,9 @@ function CAH() {
 
   this.drawBlackCard = function() {
     var i = Math.floor(Math.random() * this.black_deck.length);
-    var c = this.black_deck.splice(i, 1);
+    var c = this.black_deck.splice(i, 1)[0];
     if(this.display_socket != null){
+      console.log(c.text);
       this.sendSetBCard(this.display_socket, c.id, c.text);
     };
     return c;
@@ -135,7 +136,7 @@ function CAH() {
       while(this.players[sock].hand.length < HAND_SIZE) {
         var card = this.drawWhiteCard();
         this.players[sock].hand.push(card);
-        this.sendDeal(this.players[sock].socket, (card.id, card.text));
+        this.sendDeal(this.players[sock].socket, card.id, card.text);
       }
     }
   };
@@ -168,7 +169,6 @@ function CAH() {
     }
     var url = 'http://' + ip.address() + ':' + PORT;
     this.sendSetQR(socket, url);
-    //TODO: Send black card
     //TODO: Send white cards on the table, face up
   };
 
