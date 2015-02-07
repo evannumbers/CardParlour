@@ -15,7 +15,7 @@
 
       <div class = "middle_container">
         <div class = "logo_container">
-          <p>logo_container</p>
+          <img src="../style/img/logo.png" id="logo">
         </div>
 
         <div class = "black_card_container">
@@ -67,9 +67,7 @@
         document.getElementById("qrcode").innerHTML = "";
         qrcode = new QRCode(document.getElementById("qrcode"), {
           width : Math.min(w,h),
-          height : Math.min(w,h),
-          colorDark : '#222222',
-          colorLight : '#EEEEEE'
+          height : Math.min(w,h)
         });
         makeCode();
       });
