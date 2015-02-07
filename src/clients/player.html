@@ -21,19 +21,19 @@
   var Client = {
     name: "",
     state: "Not Connected",
-    selectedCard: 0,
+    selectedCard: -1,
     hand: []
   }
 
   </script>
   <body>
     <div data-role="page">
-      <div id="#header" data-role="header" class="ui-content">
+      <div id="header" data-role="header" style="height:3vh%">
         Join the Game!
       </div>
 
       <!-- Startup screen -->
-      <div id="#startup" data-role="main" class="ui-content">
+      <div id="startup" data-role="main" class="ui-content">
         <form id="get_name" action="">
           <label for="user">First name:</label>
           <input type="text" name="user" id="user"/>
@@ -42,14 +42,14 @@
       </div>
 
       <!-- Gameplay screen -->
-      <div id="#play" style="display:none"data-role="main" class="ui-content">
+      <div id="play" data-role="main" style="height:95vh">
         <div class="card_container">
         </div>
       </div>
 
-      <div style="display:none" id="#footer" data-role="footer">
+      <div id="footer" style="height=2vh">
         <form id="send_card" action="">
-          <button id="#send_button">Send</button>
+          <button id="send_button">Send</button>
         </form>
       </div>
     </div>
@@ -77,13 +77,19 @@
         if(msg == 2 || msg == 5) {
           send.style.display = 'block';
         } else {
-            send.style.display = 'none';
+            // send.style.display = 'none';
         }
       }
 
       function addCard(id, text) {
-        output = "<div id='#" + id + "' class='card'>" + text + "</div>"
+        output = "<div id='" + id + "' class='player_card'>" + text + "</div>";
         $(".card_container").append(output);
+
+        $("#"+id).click(function() {
+          $("#"+Client.selectedCard).css("background-color", "#eeeeee");
+          Client.selectedCard = id;
+          $("#"+id).css("background-color", "#cccccc");
+        });
       }
 
       var socket = io();
@@ -102,6 +108,11 @@
        * selected card.
        */
       $('#send_card').submit(function() {
+        /* Not yet selected */
+        if(Client.selectedCard < 0) {
+          return false;
+        }
+
         socket.emit('play', Client.selectedCard);
         return false;
       });
@@ -134,13 +145,20 @@
 
       socket.on('deal', function(id, text) {
         Client.hand.push(Card(id,text));
+
         addCard(id, text);
       });
 
       socket.on('remove card', function(id) {
+        if(id == Client.selectedCard) {
+          Client.selectedCard = -1;
+        }
         index = indexByCardID(id);
         if(index > -1) {
+          var cardId = Client.hand[index].id;
           Client.hand.splice(index, 1);
+          var divMatch = "#" + cardId;
+          $(divMatch).remove();
         } else {
           console.log("Card was not found.");
         }
