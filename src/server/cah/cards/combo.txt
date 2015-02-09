@@ -903,8 +903,7 @@ B|1|I'm pretty sure I'm high right now, because I'm absolutely mesmerized by ___
 B|1|I'm sorry, sir, but we don't allow ____ at the country club.
 B|2|If you can't handle ____, you'd better stay away from ____.
 B|2|In return for my soul, the Devil promised me ____, but all I got was ____.
-B|In the beginning, there was ____.|In the beginning, there was ____.
-B|2|X4
+B|2|In the beginning, there was ____. And the Lord said, "Let there be ____."
 W|0|Injecting speed into one arm and horse tranquilizer into the other.
 W|0|Interspecies marriage.
 B|1|It lurks in the night. It hungers for flesh. This summer, no one is safe from ____.
@@ -922,8 +921,7 @@ B|2|Oprah's book of the month is "____ For ____: A Story of Hope."
 W|0|Party Mexicans.
 W|0|Prince Ali, fabulous he, Ali Ababwa.
 W|0|Sharks with legs.
-B|She's up all night for good fun.|She's up all night for good fun.
-B|1|X4
+B|1|She's up all night for good fun. I'm up all night for ____.
 W|0|Smoking crack, for instance.
 W|0|Snorting coke off a clown's boner.
 W|0|Some sort of Asian.
