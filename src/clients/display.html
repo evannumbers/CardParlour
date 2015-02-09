@@ -80,17 +80,17 @@
         makeCode();
       });
 
-      socket.on('add player', function(name){
-        output = "<tr id='" + name + "'><td>" + name + "</td><td>0</td></tr>";
+      socket.on('add player', function(name, id){
+        output = "<tr class='player' id='" + id + "'><td>" + name + "</td><td>0</td></tr>";
         $(".scoreboard").append(output);
       });
 
-      socket.on('remove player', function(name){
-        $('tr#'+name).remove();
+      socket.on('remove player', function(id){
+        $('tr.player#'+id).remove();
       });
 
-      socket.on('set player score', function(name, score){
-        $('tr#'+name+' *:last-child').html(score);
+      socket.on('set player score', function(id, score){
+        $('tr.player#'+id+' td:last-child').html(score);
       });
 
       socket.on('set bcard', function(id, text){

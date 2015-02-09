@@ -10,8 +10,9 @@ var PORT = 1337;
 var HAND_SIZE = 10;
 var MAX_PLAYERS = 10;
 
-function Player(name, socket) {
+function Player(name, socket, id) {
   this.name = name;
+  this.id = id
   this.socket = socket;
   this.hand = [];
   this.score = 0;
@@ -31,6 +32,7 @@ function CAH() {
   this.player_count = 0;
   this.czar_order = [];
   this.pending_players = [];
+  this.next_player_id = 0;
 
   function Card(id, text) {
     this.id = id;
@@ -88,16 +90,16 @@ function CAH() {
     socket.emit('remove card', id);
   };
 
-  this.sendAddPlayer = function(socket, name) {
-    socket.emit('add player', name);
+  this.sendAddPlayer = function(socket, name, id) {
+    socket.emit('add player', name, id);
   };
 
-  this.sendSetPlayerScore = function(socket, name, score) {
-    socket.emit('set player score', name, score);
+  this.sendSetPlayerScore = function(socket, id, score) {
+    socket.emit('set player score', id, score);
   };
 
-  this.sendRemovePlayer = function(socket, name) {
-    socket.emit('remove player', name);
+  this.sendRemovePlayer = function(socket, id) {
+    socket.emit('remove player', id);
   };
 
   this.sendSetBCard = function(socket, id, text) {
@@ -124,7 +126,7 @@ function CAH() {
   this.removePlayer = function(player) {
     //console.log(socket);
     this.player_count--;
-    this.sendRemovePlayer(this.display_socket, player.name);
+    this.sendRemovePlayer(this.display_socket, player.id);
     for(var i = 0; i < this.czar_order.length; i++){
       if(this.czar_order[i] == player){
         this.czar_order.splice(i,1);
@@ -194,8 +196,8 @@ function CAH() {
 
   this.startRound = function() {
     this.sendClearCards(this.display_socket);
-    for(var c in this.played_cards){
-      this.white_graveyard.push(c);
+    for(var i in this.played_cards){
+      this.white_graveyard.push(this.played_cards[i]);
     }
     this.played_cards = {};
     this.pending_players = this.czar_order.slice();
@@ -221,6 +223,12 @@ function CAH() {
     }
   }
 
+  this.newPlayerID = function(){
+    var result = this.next_player_id;
+    this.next_player_id++;
+    return result;
+  };
+
   this.addPlayer = function(player) {
     if(this.player_count >= MAX_PLAYERS) {
       this.sendState(player.socket, 0);
@@ -229,7 +237,9 @@ function CAH() {
     }
     this.players.push(player);
     //console.log(this.players);
-    this.sendAddPlayer(player.socket, player.name);
+    //Why are we sending the player AddPlayer?  They don't do anything with it.
+    //Potentially delete following line:
+    this.sendAddPlayer(player.socket, player.name, player.id);
     this.czar_order.push(player);
     if(this.game_state === 1){
       this.fillHand(player);
@@ -238,8 +248,8 @@ function CAH() {
       this.sendState(player.socket, 0);
     }
     if(this.display_socket != null){
-      this.sendAddPlayer(this.display_socket, player.name);
-      this.sendSetPlayerScore(this.display_socket, player.name, 0);
+      this.sendAddPlayer(this.display_socket, player.name, player.id);
+      this.sendSetPlayerScore(this.display_socket, player.id, 0);
     }
     this.player_count++;
     if(this.player_count == 3) { //TODO
@@ -251,7 +261,7 @@ function CAH() {
     this.display_socket = socket;
     for(var player in this.players) {
       this.sendAddPlayer(socket, player.name);
-      this.sendSetPlayerScore(socket, player.name, player.score);
+      this.sendSetPlayerScore(socket, player.id, player.score);
     }
     var url = 'http://' + ip.address() + ':' + PORT;
     this.sendSetQR(socket, url);
@@ -273,7 +283,7 @@ function CAH() {
       for(var i in this.played_cards) {
         if(this.played_cards[i].id == (-1*id)) {
           for(j in this.players){
-            if(this.players[j].name == i){
+            if(this.players[j].id == i){
               this.players[j].score++;
               this.sendSetPlayerScore(this.display_socket,i,this.players[j].score);
               break;
@@ -290,7 +300,7 @@ function CAH() {
         var index = player.hand.indexOf(card);
       }
     }
-      this.played_cards[player.name] = card;
+      this.played_cards[player.id] = card;
       player.hand.splice(index, 1)[0];
       this.sendState(player.socket, 3);
       this.sendRemoveCard(player.socket, id);
@@ -324,7 +334,7 @@ app.get('/display', function(req, res){
 io.on('connection', function(socket){
   console.log("client connected");
   socket.on('join', function(name){
-    this.player = new Player(name, socket);
+    this.player = new Player(name, socket, cah.newPlayerID());
     cah.addPlayer(this.player);
   });
   socket.on('play', function(id){
