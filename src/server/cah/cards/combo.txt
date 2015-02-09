@@ -978,7 +978,6 @@ W|0|Scaife, wherever the fuck that is.
 W|0|Enough Dropbox t-shirts to build a tent.
 W|0|Sexy pillow fights with Kesden.
 B|1|The best part of hosting baggers is ____.
-B|1|Best 112 Term Project: ____.
 W|0|Walking to the Sky, but with dildos.
 W|0|The cold breeze underneath your kilt.
 W|0|Sucking a sponsor's dick to win a hackathon.
@@ -989,5 +988,5 @@ B|1|My heart is in ____.
 B|1|We must never teach robots the joy of____.
 W|0|Submitting to Autolab with seconds to go.
 W|0|Not commenting your code, because that's for little bitches.
-B|1|Kosbie's Last Lecture: ____.
 B|1|The only thing harder than 251 is ____.
+B|1|Netflix, but for ____.
