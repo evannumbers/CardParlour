@@ -416,11 +416,16 @@ function CAH() {
           var index = i;
         }
       }
-      this.played_cards.push(card);
+      //TODO: Place card in played_cards randomly and tell display
+      var index = Math.floor(Math.random() * (this.played_cards.length + 1));
+      this.played_cards.splice(index,0,card);
       player.hand.splice(index, 1)[0];
       this.sendState(player.socket, 3);
       this.sendRemoveCard(player.socket, id);
-      this.displayAddWCard(card);
+      this.displayClearCards();
+      for(var i = 0; i < this.played_cards.length; i++){
+        this.displayAddWCard(this.played_cards[i]);
+      }
       for(var i = 0; i < this.pending_players.length; i++){
         if(this.pending_players[i] == player){
           this.pending_players.splice(i,1);
