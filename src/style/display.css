@@ -6,17 +6,16 @@ body
 
 div.top_container
 {
-  height: 55%;
+  height: 52%;
 }
 
 div.card_container
 {
-  height: 38%;
+  height: 35%;
 }
 
-div.timer_container
+div.footer
 {
-  display:none;
 }
 
 div.player_container
@@ -67,6 +66,11 @@ td
 }
 
 p#scoreboard
+{
+  font-size: 2vw;
+}
+
+p#winner
 {
   font-size: 2vw;
 }

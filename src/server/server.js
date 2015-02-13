@@ -9,6 +9,7 @@ var ip = require('ip');
 var PORT = 1337;
 var HAND_SIZE = 10;
 var MAX_PLAYERS = 10;
+var WINNER_TIME = 5000;
 
 function Player(name, socket, id) {
   this.name = name;
@@ -28,12 +29,12 @@ function CAH() {
   this.white_graveyard = [];
   this.black_graveyard = [];
   this.played_cards = [];
-  this.display_socket = null;
   this.player_count = 0;
   this.czar_order = [];
   this.pending_players = [];
   this.next_player_id = 0;
   this.displays = [];
+  this.winner = "";
 
   function Card(id, text) {
     this.id = id;
@@ -123,6 +124,10 @@ function CAH() {
 
   this.sendSetQR = function(socket, url) {
     socket.emit('set qr', url);
+  };
+
+  this.sendSetWinner = function(socket, name) {
+    socket.emit('set winner', name);
   };
   /*End socket output functions*/
 
@@ -290,6 +295,14 @@ function CAH() {
     }
   };
 
+  this.displaySetWinner = function(name){
+    for(var i = 0; i < this.displays.length; i++)
+    {
+      var d = this.displays[i];
+      this.sendSetWinner(d, name);
+    }
+  };
+
   this.displayFlipWCard = function(id){
     for(var i = 0; i < this.displays.length; i++)
     {
@@ -339,16 +352,14 @@ function CAH() {
         this.sendFlipWCard(socket, card.id);
       }
     }
+    this.sendSetWinner(socket, this.winner);
     var url = 'http://' + ip.address() + ':' + PORT;
     this.sendSetQR(socket, url);
-    //TODO: Send white cards on the table, face up
   };
 
   this.addDisplay = function(socket) {
     this.displays.push(socket);
     this.setUpDisplay(socket);
-    //TODO: Remove this:
-    this.display_socket = socket;
   };
 
   this.removeDisplay = function(socket) {
@@ -371,13 +382,24 @@ function CAH() {
     this.game_state = 2;
   };
 
+  this.cleanUpWinner = function() {
+    this.winner = "";
+    this.displaySetWinner(this.winner);
+    this.startRound();
+  };
+
   this.playCard = function(player, id) {
     if(id < 0 && player == this.czar) {
       //The Czar selects the winner
+      this.displayClearCards();
       for(var i = 0; i < this.played_cards.length; i++) {
         if(this.played_cards[i].id == (-1*id)) {
+          this.displayAddWCard(this.played_cards[i]);
+          this.displayFlipWCard(this.played_cards[i].id);
           for(var j = 0; j < this.players.length; j++){
             if(this.players[j].id == this.played_cards[i].ownerID){
+              this.winner = this.players[j].name;
+              this.displaySetWinner(this.winner);
               this.setPlayerScore(this.players[j],this.players[j].score + 1);
               break;
             }
@@ -385,7 +407,7 @@ function CAH() {
           break;
         }
       }
-      this.startRound();
+      setTimeout(this.cleanUpWinner.bind(this), WINNER_TIME);
     }
     else {
       for(var i = 0; i < player.hand.length; i++){

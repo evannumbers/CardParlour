@@ -38,8 +38,8 @@
 
     <br>
 
-    <div class = "timer_container">
-      <p>timer_container</p>
+    <div class = "footer">
+      <p id="winner"></p>
     </div>
 
     <script type="text/javascript">
@@ -111,6 +111,15 @@
       socket.on('clear cards', function(){
         $('.card:not(#bc)').remove();
         card_text = [];
+      });
+
+      socket.on('set winner', function(name){
+        if(name.length > 0){
+          $('p#winner').html(name + " won the last round!");
+        }
+        else{
+          $('p#winner').html("");
+        }
       });
 
       makeCode()
