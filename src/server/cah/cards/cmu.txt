@@ -13,7 +13,7 @@ W|0|Finding companionship in homework.
 W|0|Enough DineX to buy a stripper and a half.
 W|0|DineX condoms.
 B|1|My heart is in ____.
-B|1|We must never teach robots the joy of____.
+B|1|We must never teach robots the joy of ____.
 W|0|Submitting to Autolab with seconds to go.
 W|0|Not commenting your code, because that's for little bitches.
 B|1|The only thing harder than 251 is ____.
