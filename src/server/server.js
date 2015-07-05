@@ -13,10 +13,12 @@ var WINNER_TIME = 5000;
 
 function Player(name, socket, id) {
   this.name = name;
-  this.id = id
+  this.id = id;
+  this.ip = socket.request.connection.remoteAddress;
   this.socket = socket;
   this.hand = [];
   this.score = 0;
+  this.active = true;
 }
 
 function CAH() {
@@ -453,6 +455,7 @@ app.get('/display', function(req, res){
 
 io.on('connection', function(socket){
   console.log("client connected");
+  socket.emit('who are you', 0);
   socket.on('join', function(name){
     if (/[^A-Za-z0-9 ]/.test(name))
     {
