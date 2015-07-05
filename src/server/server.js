@@ -291,15 +291,17 @@ function CAH() {
     }
   };
 
+  // Reactivate a previously disconnected player, returns true iff succeeds
   this.activatePlayer = function(name, socket) {
     var ip = socketIP(socket)
     for(var i = 0; i < this.inactive_players.length; i++) {
       if(this.inactive_players[i].name == name && this.players[i].ip == ip){
         this.inactive_players[i].socket = socket;
         this.addPlayer(this.inactive_players.splice(i,1))
-        break;
+        return true;
       }
     }
+    return false;
   }
 
   this.setPlayerScore = function(player, score) {
@@ -496,9 +498,10 @@ io.on('connection', function(socket){
       return;
     }
     //TODO: Make sure the display client can handle rejection
-    pname = name;
-    this.player = new Player(name, socket, cah.newPlayerID());
-    cah.addPlayer(this.player);
+    if(!cah.activatePlayer(name, socket)){
+      this.player = new Player(name, socket, cah.newPlayerID());
+      cah.addPlayer(this.player);
+    }
   });
   socket.on('play', function(id){
     cah.playCard(this.player, id);
