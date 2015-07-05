@@ -10,15 +10,21 @@ var PORT = 1337;
 var HAND_SIZE = 10;
 var MAX_PLAYERS = 10;
 var WINNER_TIME = 5000;
+var MAX_INACTIVE_ROUNDS = 5;
+var NAME_REQUIREMENTS = /[A-Za-z0-9 ]{1,}/;
+
+function socketIP(socket){
+  return socket.request.connection.remoteAddress;
+}
 
 function Player(name, socket, id) {
   this.name = name;
   this.id = id;
-  this.ip = socket.request.connection.remoteAddress;
+  this.ip = socketIP(socket);
   this.socket = socket;
   this.hand = [];
   this.score = 0;
-  this.active = true;
+  this.inactive_count = 0;
 }
 
 function CAH() {
@@ -26,6 +32,7 @@ function CAH() {
   this.czar = null;
   this.black_card = null;
   this.players = [];
+  this.inactive_players = [];
   this.white_deck = [];
   this.black_deck = [];
   this.white_graveyard = [];
@@ -136,24 +143,30 @@ function CAH() {
   this.removePlayer = function(player) {
     this.player_count--;
     this.displayRemovePlayer(player);
+    // Remove player from czar order
     for(var i = 0; i < this.czar_order.length; i++){
       if(this.czar_order[i] == player){
         this.czar_order.splice(i,1);
         break;
       }
     }
+    // Remove player from pending_players
     for(var i = 0; i < this.pending_players.length; i++){
       if(this.pending_players[i] == player){
         this.pending_players.splice(i,1);
         break;
       }
     }
+    // Remove player from player list
     for(var i = 0; i < this.players.length; i++){
       if(this.players[i] == player){
         this.players.splice(i,1);
         break;
       }
     }
+    this.inactive_players.push(player);
+    player.inactive_count = 0;
+    // If the player who left was czar, start a new round
     if(player == this.czar){
       this.startRound();
     }
@@ -212,6 +225,16 @@ function CAH() {
   };
 
   this.startRound = function() {
+    // Increment inactive count
+    for(var i = 0; i < this.inactive_players.length; i++){
+      if(this.inactive_players[i].inactive_count < MAX_INACTIVE_ROUNDS){
+        this.inactive_players[i].inactive_count++;
+      }
+      else{
+        this.inactive_players.splice(i,1);
+        i--;
+      }
+    }
     this.displayClearCards();
     for(var i = 0; i < this.played_cards.length; i++){
       this.white_graveyard.push(this.played_cards[i]);
@@ -255,7 +278,7 @@ function CAH() {
     }
     this.players.push(player);
     this.czar_order.push(player);
-    if(this.game_state === 1){
+    if(this.game_state == 1){
       this.fillHand(player);
       this.sendState(player.socket, 1);
     } else {
@@ -267,6 +290,17 @@ function CAH() {
       this.startRound();
     }
   };
+
+  this.activatePlayer = function(name, socket) {
+    var ip = socketIP(socket)
+    for(var i = 0; i < this.inactive_players.length; i++) {
+      if(this.inactive_players[i].name == name && this.players[i].ip == ip){
+        this.inactive_players[i].socket = socket;
+        this.addPlayer(this.inactive_players.splice(i,1))
+        break;
+      }
+    }
+  }
 
   this.setPlayerScore = function(player, score) {
     player.score = score;
@@ -455,9 +489,9 @@ app.get('/display', function(req, res){
 
 io.on('connection', function(socket){
   console.log("client connected");
-  socket.emit('who are you', 0);
+  socket.emit('ping', 0);
   socket.on('join', function(name){
-    if (/[^A-Za-z0-9 ]/.test(name))
+    if (!NAME_REQUIREMENTS.test(name))
     {
       return;
     }
@@ -480,6 +514,11 @@ io.on('connection', function(socket){
   });
   socket.on('register display', function(){
     cah.addDisplay(socket);
+  });
+  socket.on('pong', function(name){
+    if(NAME_REQUIREMENTS.test(name)){
+      cah.activatePlayer(name, socket);
+    }
   });
 });
 

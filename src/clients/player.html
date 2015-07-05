@@ -19,7 +19,6 @@
   /* Client class */
   var Client = function() {
     this.name = "";
-    this.state = "Not Connected";
     this.selectedCard = null;
     this.hand = [];
     this.czarHand = [];
@@ -314,6 +313,12 @@
         {
           console.log("Card does not exist.");
         }
+      });
+
+      /* Event handler for when the server asks who the client is
+       */
+      socket.on('ping', function(){
+        socket.emit('pong', client.name)
       });
     </script>
 
