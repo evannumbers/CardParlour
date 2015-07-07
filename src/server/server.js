@@ -284,6 +284,12 @@ function CAH() {
     return result;
   };
 
+  this.refreshCards = function(player) {
+    for(var i=0; i<player.hand.length; i++) {
+      this.sendDeal(player.socket, player.hand[i].id, player.hand[i].text);
+    }
+  }
+
   this.addPlayer = function(player, already_here) {
     if(!already_here && this.player_count >= MAX_PLAYERS) {
       this.sendState(player.socket, 0);
@@ -292,7 +298,9 @@ function CAH() {
     }
     this.players.push(player);
     if(already_here) {
+      player.active = true;
       this.displayActivatePlayer(player);
+      this.refreshCards(player);
     }
     else {
       this.czar_order.push(player);
