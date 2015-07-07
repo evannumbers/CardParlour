@@ -63,6 +63,12 @@ tr:nth-child(even)
 td
 {
   width: 50%;
+  color: #000000;
+}
+
+td.deactivated
+{
+  color: #999999;
 }
 
 p#scoreboard

@@ -24,6 +24,7 @@ function Player(name, socket, id) {
   this.socket = socket;
   this.hand = [];
   this.score = 0;
+  this.active = true;
   this.inactive_count = 0;
 }
 
@@ -115,6 +116,14 @@ function CAH() {
     socket.emit('remove player', id);
   };
 
+  this.sendDeactivatePlayer = function(socket, id) {
+    socket.emit('deactivate player', id);
+  };
+
+  this.sendActivatePlayer = function(socket, id) {
+    socket.emit('activate player', id);
+  };
+
   this.sendSetBCard = function(socket, id, text) {
     socket.emit('set bcard', id, text);
   };
@@ -150,6 +159,11 @@ function CAH() {
         break;
       }
     }
+  };
+
+  this.deactivatePlayer = function(player) {
+    player.active = false;
+    this.displayDeactivatePlayer(player);
     // Remove player from pending_players
     for(var i = 0; i < this.pending_players.length; i++){
       if(this.pending_players[i] == player){
@@ -231,7 +245,7 @@ function CAH() {
         this.inactive_players[i].inactive_count++;
       }
       else{
-        this.inactive_players.splice(i,1);
+        this.removePlayer(this.inactive_players.splice(i,1));
         i--;
       }
     }
@@ -270,23 +284,29 @@ function CAH() {
     return result;
   };
 
-  this.addPlayer = function(player) {
-    if(this.player_count >= MAX_PLAYERS) {
+  this.addPlayer = function(player, already_here) {
+    if(!already_here && this.player_count >= MAX_PLAYERS) {
       this.sendState(player.socket, 0);
       console.log("Max players reached; new player rejected");
       return;
     }
     this.players.push(player);
-    this.czar_order.push(player);
+    if(already_here) {
+      this.displayActivatePlayer(player);
+    }
+    else {
+      this.czar_order.push(player);
+      this.player_count++;
+      this.displayAddPlayer(player);
+    }
     if(this.game_state == 1){
       this.fillHand(player);
       this.sendState(player.socket, 1);
-    } else {
+    }
+    else {
       this.sendState(player.socket, 0);
     }
-    this.displayAddPlayer(player);
-    this.player_count++;
-    if(this.player_count == 3) { //TODO
+    if(this.player_count == 3 && this.game_state == 0) { //TODO
       this.startRound();
     }
   };
@@ -295,9 +315,9 @@ function CAH() {
   this.activatePlayer = function(name, socket) {
     var ip = socketIP(socket)
     for(var i = 0; i < this.inactive_players.length; i++) {
-      if(this.inactive_players[i].name == name && this.players[i].ip == ip){
+      if(this.inactive_players[i].name == name && this.inactive_players[i].ip == ip){
         this.inactive_players[i].socket = socket;
-        this.addPlayer(this.inactive_players.splice(i,1))
+        this.addPlayer(this.inactive_players.splice(i,1)[0], true)
         return true;
       }
     }
@@ -371,6 +391,22 @@ function CAH() {
     {
       var d = this.displays[i];
       this.sendRemovePlayer(d, player.id);
+    }
+  };
+
+  this.displayDeactivatePlayer = function(player){
+    for(var i = 0; i < this.displays.length; i++)
+    {
+      var d = this.displays[i];
+      this.sendDeactivatePlayer(d, player.id);
+    }
+  };
+
+  this.displayActivatePlayer = function(player){
+    for(var i = 0; i < this.displays.length; i++)
+    {
+      var d = this.displays[i];
+      this.sendActivatePlayer(d, player.id);
     }
   };
 
@@ -500,7 +536,7 @@ io.on('connection', function(socket){
     //TODO: Make sure the display client can handle rejection
     if(!cah.activatePlayer(name, socket)){
       this.player = new Player(name, socket, cah.newPlayerID());
-      cah.addPlayer(this.player);
+      cah.addPlayer(this.player, false);
     }
   });
   socket.on('play', function(id){
@@ -511,7 +547,7 @@ io.on('connection', function(socket){
   });
   socket.on('disconnect', function(){
     if(this.player != null){
-      cah.removePlayer(this.player);
+      cah.deactivatePlayer(this.player);
     }
     cah.removeDisplay(socket);
   });

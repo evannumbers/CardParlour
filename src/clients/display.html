@@ -2,10 +2,10 @@
   <head>
     <link rel="stylesheet" type="text/css" href="/style/default.css">
     <link rel="stylesheet" type="text/css" href="/style/display.css">
-    <script type="text/javascript" src="../style/qr/jquery.min.js"></script>
-    <script type="text/javascript" src="../style/qr/qrcode.js"></script>
-    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
-    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    <script type="text/javascript" src="/style/qr/jquery.min.js"></script>
+    <script type="text/javascript" src="/style/qr/qrcode.js"></script>
+    <script src="/style/socket.io.js"></script>
+    <script src="/style/jquery-1.11.3.min.js"></script>
   </head>
   <body>
     <div class = "top_container">
@@ -16,7 +16,7 @@
 
       <div class = "middle_container">
         <div class = "logo_container">
-          <img src="../style/img/logo.png" id="logo">
+          <img src="/style/img/logo.png" id="logo">
         </div>
 
         <div class = "black_card_container">
@@ -89,6 +89,14 @@
         $('tr.player#'+id).remove();
       });
 
+      socket.on('deactivate player', function(id){
+        $('tr.player#'+id+" > td").attr('class', 'deactivated');
+      });
+
+      socket.on('activate player', function(id){
+        $('tr.player#'+id+" > td").attr('class', '');
+      });
+
       socket.on('set player score', function(id, score){
         $('tr.player#'+id+' td:last-child').html(score);
       });
@@ -100,7 +108,7 @@
 
       socket.on('add wcard', function(id, text){
         card_text[id] = text;
-        output = "<div id='" + id + "' class='card'><img src='../style/img/card.png' style='width:100%;padding-top:30%;'></div>";
+        output = "<div id='" + id + "' class='card'><img src='/style/img/card.png' style='width:100%;padding-top:30%;'></div>";
         $(".card_container").append(output);
       });
 
