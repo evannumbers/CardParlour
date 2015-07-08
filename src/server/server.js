@@ -254,7 +254,7 @@ function CAH() {
       this.white_graveyard.push(this.played_cards[i]);
     }
     this.played_cards = [];
-    this.pending_players = this.czar_order.slice();
+    this.pending_players = this.players.slice();
     this.czar = this.chooseCzar();
     this.game_state = 1;
     for(player in this.players){
@@ -324,12 +324,13 @@ function CAH() {
     var ip = socketIP(socket)
     for(var i = 0; i < this.inactive_players.length; i++) {
       if(this.inactive_players[i].name == name && this.inactive_players[i].ip == ip){
-        this.inactive_players[i].socket = socket;
-        this.addPlayer(this.inactive_players.splice(i,1)[0], true)
-        return true;
+        var player = this.inactive_players.splice(i,1)[0]
+        player.socket = socket;
+        this.addPlayer(player, true)
+        return player;
       }
     }
-    return false;
+    return null;
   }
 
   this.setPlayerScore = function(player, score) {
@@ -478,11 +479,12 @@ function CAH() {
         if(this.played_cards[i].id == (-1*id)) {
           this.displayAddWCard(this.played_cards[i]);
           this.displayFlipWCard(this.played_cards[i].id);
-          for(var j = 0; j < this.players.length; j++){
-            if(this.players[j].id == this.played_cards[i].ownerID){
-              this.winner = this.players[j].name;
+          var all_players = this.players.concat(this.inactive_players)
+          for(var j = 0; j < all_players.length; j++){
+            if(all_players[j].id == this.played_cards[i].ownerID){
+              this.winner = all_players[j].name;
               this.displaySetWinner(this.winner);
-              this.setPlayerScore(this.players[j],this.players[j].score + 1);
+              this.setPlayerScore(all_players[j],all_players[j].score + 1);
               break;
             }
           }
@@ -491,17 +493,18 @@ function CAH() {
       }
       setTimeout(this.cleanUpWinner.bind(this), WINNER_TIME);
     }
+    //Not the czar, just someone playing a card
     else {
       for(var i = 0; i < player.hand.length; i++){
         if(player.hand[i].id == id){
-          var card = player.hand[i];
+          var card = player.hand.splice(i, 1)[0];
           var index = i;
         }
       }
       //TODO: Place card in played_cards randomly and tell display
       var index = Math.floor(Math.random() * (this.played_cards.length + 1));
+      //Doesn't remove anything, inserts card at index
       this.played_cards.splice(index,0,card);
-      player.hand.splice(index, 1)[0];
       this.sendState(player.socket, 3);
       this.sendRemoveCard(player.socket, id);
       this.displayClearCards();
@@ -542,7 +545,8 @@ io.on('connection', function(socket){
       return;
     }
     //TODO: Make sure the display client can handle rejection
-    if(!cah.activatePlayer(name, socket)){
+    this.player = cah.activatePlayer(name, socket);
+    if(this.player == null){
       this.player = new Player(name, socket, cah.newPlayerID());
       cah.addPlayer(this.player, false);
     }
@@ -564,7 +568,7 @@ io.on('connection', function(socket){
   });
   socket.on('pong', function(name){
     if(NAME_REQUIREMENTS.test(name)){
-      cah.activatePlayer(name, socket);
+      this.player = cah.activatePlayer(name, socket);
     }
   });
 });
