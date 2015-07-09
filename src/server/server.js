@@ -184,6 +184,9 @@ function CAH() {
     if(player == this.czar){
       this.startRound();
     }
+    else if(this.pending_players.length == 1) {
+      this.czarPhase();
+    }
   };
 
   this.drawWhiteCard = function() {
