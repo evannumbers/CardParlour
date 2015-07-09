@@ -10,7 +10,7 @@ var PORT = 1337;
 var HAND_SIZE = 10;
 var MAX_PLAYERS = 10;
 var WINNER_TIME = 5000;
-var MAX_INACTIVE_ROUNDS = 5;
+var MAX_INACTIVE_ROUNDS = 1;
 var NAME_REQUIREMENTS = /[A-Za-z0-9 ]{1,}/;
 
 function socketIP(socket){
@@ -233,9 +233,13 @@ function CAH() {
   };
 
   this.chooseCzar = function() {
-    var ele = this.czar_order.shift();
-    this.czar_order.push(ele);
-    return ele;
+    var player = this.czar_order.shift();
+    this.czar_order.push(player);
+    while(player.active == false){
+      player = this.czar_order.shift();
+      this.czar_order.push(player)
+    }
+    return player;
   };
 
   this.startRound = function() {
@@ -245,7 +249,7 @@ function CAH() {
         this.inactive_players[i].inactive_count++;
       }
       else{
-        this.removePlayer(this.inactive_players.splice(i,1));
+        this.removePlayer(this.inactive_players.splice(i,1)[0]);
         i--;
       }
     }
@@ -297,6 +301,7 @@ function CAH() {
       return;
     }
     this.players.push(player);
+    this.pending_players.push(player);
     if(already_here) {
       player.active = true;
       this.displayActivatePlayer(player);
