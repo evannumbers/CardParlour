@@ -474,6 +474,7 @@ function CAH() {
         this.sendFlipWCard(socket, card.id);
       }
     }
+    this.sendChooseCzar(socket, this.czar.id);
     this.sendSetWinner(socket, this.winner);
     var url = 'http://' + ip.address() + ':' + PORT;
     this.sendSetQR(socket, url);
