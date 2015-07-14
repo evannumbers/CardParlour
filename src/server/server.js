@@ -196,7 +196,7 @@ function CAH() {
       }
       this.startRound();
     }
-    else if(this.pending_players.length == 1) {
+    else if(this.pending_players.length == 1 && this.game_state == 1) {
       this.czarPhase();
     }
   };
