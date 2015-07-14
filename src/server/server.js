@@ -4,7 +4,7 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var fs = require('fs');
 var path = require('path');
-var ip = require('ip');
+var ip = require('public-ip');
 
 var PORT = 1337;
 var HAND_SIZE = 10;
@@ -12,6 +12,11 @@ var MAX_PLAYERS = 10;
 var WINNER_TIME = 5000;
 var MAX_INACTIVE_ROUNDS = 1;
 var NAME_REQUIREMENTS = /[A-Za-z0-9 ]{1,}/;
+var IP = '127.0.0.1'
+
+ip(function(err, ip){
+  IP = ip;
+});
 
 function socketIP(socket){
   return socket.request.connection.remoteAddress;
@@ -478,7 +483,7 @@ function CAH() {
       this.sendChooseCzar(socket, this.czar.id);
     }
     this.sendSetWinner(socket, this.winner);
-    var url = 'http://' + ip.address() + ':' + PORT;
+    var url = 'http://' + IP + ':' + PORT;
     this.sendSetQR(socket, url);
   };
 
