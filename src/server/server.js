@@ -124,6 +124,10 @@ function CAH() {
     socket.emit('activate player', id);
   };
 
+  this.sendChooseCzar = function(socket, id) {
+    socket.emit('choose czar', id);
+  };
+
   this.sendSetBCard = function(socket, id, text) {
     socket.emit('set bcard', id, text);
   };
@@ -181,13 +185,36 @@ function CAH() {
     this.inactive_players.push(player);
     player.inactive_count = 0;
     // If the player who left was czar, start a new round
-    if(player == this.czar){
+    if(player == this.czar && this.game_state != 3){
+      if(this.game_state == 1){
+        this.giveBackCards();
+      }
       this.startRound();
     }
     else if(this.pending_players.length == 1) {
       this.czarPhase();
     }
   };
+
+  this.giveBackCards = function() {
+    for(var i=0; i<this.played_cards.length; i++){
+      card = this.played_cards[i];
+      var all_players = this.players.concat(this.inactive_players)
+      var given = false;
+      for(var j = 0; j < all_players.length; j++){
+        var player = all_players[j];
+        if(player.id == card.ownerID){
+          player.hand.push(card);
+          given = true;
+          this.sendDeal(player.socket, card.id, card.text);
+        }
+      }
+      if(!given){
+        this.white_graveyard.push(card);
+      }
+    }
+    this.played_cards = [];
+  }
 
   this.drawWhiteCard = function() {
     var i = Math.floor(Math.random() * this.white_deck.length);
@@ -214,14 +241,7 @@ function CAH() {
 
   this.fillHands = function() {
     for(var i = 0; i < this.players.length; i++) {
-      while(this.players[i].hand.length < HAND_SIZE) {
-        var card = this.drawWhiteCard();
-        card.ownerID = this.players[i].id;
-        card.flipped = false;
-        this.players[i].hand.push(card);
-        this.sendDeal(this.players[i].socket,
-          card.id, card.text);
-      }
+      this.fillHand(this.players[i]);
     }
   };
 
@@ -242,6 +262,7 @@ function CAH() {
       player = this.czar_order.shift();
       this.czar_order.push(player)
     }
+    this.displayChooseCzar(player);
     return player;
   };
 
@@ -279,9 +300,10 @@ function CAH() {
   this.fillHand = function(player) {
     while(player.hand.length < HAND_SIZE) {
       var card = this.drawWhiteCard();
+      card.ownerID = player.id;
+      card.flipped = false;
       player.hand.push(card);
-      this.sendDeal(player.socket,
-        card.id, card.text);
+      this.sendDeal(player.socket, card.id, card.text);
     }
   }
 
@@ -331,7 +353,8 @@ function CAH() {
   this.activatePlayer = function(name, socket) {
     var ip = socketIP(socket)
     for(var i = 0; i < this.inactive_players.length; i++) {
-      if(this.inactive_players[i].name == name && this.inactive_players[i].ip == ip){
+      if(this.inactive_players[i].name == name &&
+         this.inactive_players[i].ip == ip){
         var player = this.inactive_players.splice(i,1)[0]
         player.socket = socket;
         this.addPlayer(player, true)
@@ -427,6 +450,14 @@ function CAH() {
     }
   };
 
+  this.displayChooseCzar = function(player){
+    for(var i = 0; i < this.displays.length; i++)
+    {
+      var d = this.displays[i];
+      this.sendChooseCzar(d, player.id);
+    }
+  };
+
   this.setUpDisplay = function(socket){
     for(var i = 0; i < this.players.length; i++) {
       var player = this.players[i];
@@ -499,6 +530,7 @@ function CAH() {
           break;
         }
       }
+      this.game_state = 3;
       setTimeout(this.cleanUpWinner.bind(this), WINNER_TIME);
     }
     //Not the czar, just someone playing a card

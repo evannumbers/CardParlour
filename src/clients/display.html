@@ -90,11 +90,16 @@
       });
 
       socket.on('deactivate player', function(id){
-        $('tr.player#'+id+" > td").attr('class', 'deactivated');
+        $('tr.player#'+id+' > td').attr('class', 'deactivated');
       });
 
       socket.on('activate player', function(id){
-        $('tr.player#'+id+" > td").attr('class', '');
+        $('tr.player#'+id+' > td').attr('class', '');
+      });
+
+      socket.on('choose czar', function(id){
+        $('tr.player > td').css('font-weight', 'normal');
+        $('tr.player#'+id+' > td:first-child').css('font-weight', 'bold');
       });
 
       socket.on('set player score', function(id, score){
