@@ -10,7 +10,8 @@ var PORT = 1337;
 var HAND_SIZE = 10;
 var MAX_PLAYERS = 10;
 var WINNER_TIME = 5000;
-var MAX_INACTIVE_ROUNDS = 1;
+var WAIT_FOR_PLAYERS_TIME = 3000;
+var MAX_INACTIVE_ROUNDS = 3;
 var NAME_REQUIREMENTS = /[A-Za-z0-9 ]{1,}/;
 var IP = '127.0.0.1'
 
@@ -196,7 +197,7 @@ function CAH() {
       }
       this.startRound();
     }
-    else if(this.pending_players.length == 1 && this.game_state == 1) {
+    else if(this.pending_players.length == 1 && this.game_state == 1 && this.played_cards.length >= 2) {
       this.czarPhase();
     }
   };
@@ -272,6 +273,19 @@ function CAH() {
   };
 
   this.startRound = function() {
+    this.displayClearCards();
+    for(var i = 0; i < this.played_cards.length; i++){
+      this.white_graveyard.push(this.played_cards[i]);
+    }
+    this.played_cards = [];
+    if(this.players.length < 3){
+      for(var i=0; i<this.players.length; i++){
+        var player = this.players[i];
+        this.sendState(player.socket, 3);
+      }
+      setTimeout(this.startRound.bind(this), WAIT_FOR_PLAYERS_TIME);
+      return;
+    }
     // Increment inactive count
     for(var i = 0; i < this.inactive_players.length; i++){
       if(this.inactive_players[i].inactive_count < MAX_INACTIVE_ROUNDS){
@@ -282,19 +296,15 @@ function CAH() {
         i--;
       }
     }
-    this.displayClearCards();
-    for(var i = 0; i < this.played_cards.length; i++){
-      this.white_graveyard.push(this.played_cards[i]);
-    }
-    this.played_cards = [];
     this.pending_players = this.players.slice();
     this.czar = this.chooseCzar();
     this.game_state = 1;
-    for(player in this.players){
-      if(this.players[player] == this.czar){
-        this.sendState(this.players[player].socket, 2);
+    for(var i=0; i<this.players.length; i++){
+      var player = this.players[i];
+      if(player == this.czar){
+        this.sendState(player.socket, 2);
       } else {
-        this.sendState(this.players[player].socket, 1);
+        this.sendState(player.socket, 1);
       }
     }
     this.fillHands();
