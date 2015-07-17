@@ -26,11 +26,11 @@ var PLAYER_STATE_CZAR_WAIT = 2;
 var PLAYER_STATE_WAIT_FOR_CZAR = 3;
 var PLAYER_STATE_CZAR_CHOOSE = 4;
 
-ip(function(err, ip){
+ip(function(err, ip) {
   IP = ip;
 });
 
-function socketIP(socket){
+function socketIP(socket) {
   return socket.request.connection.remoteAddress;
 }
 
@@ -73,15 +73,14 @@ function CAH() {
   this.getCards = function() {
     var filePath = path.join(__dirname, '../server/cah/cards/combo.txt');
     var self = this;
-    fs.readFile(filePath, {encoding: 'utf-8'}, function(err, data){
-      if (!err){
+    fs.readFile(filePath, {encoding: 'utf-8'}, function(err, data) {
+      if (!err) {
         data = data.split("\n");
         for(var i in data) {
           var line = data[i];
 
           /* Ignore the empty line cause by the final newline */
-          if(line == "")
-          {
+          if(line == "") {
             continue;
           }
 
@@ -174,8 +173,8 @@ function CAH() {
     this.player_count--;
     this.displayRemovePlayer(player);
     // Remove player from czar order
-    for(var i = 0; i < this.czar_order.length; i++){
-      if(this.czar_order[i] == player){
+    for(var i = 0; i < this.czar_order.length; i++) {
+      if(this.czar_order[i] == player) {
         this.czar_order.splice(i,1);
         break;
       }
@@ -186,15 +185,15 @@ function CAH() {
     player.active = false;
     this.displayDeactivatePlayer(player);
     // Remove player from pending_players
-    for(var i = 0; i < this.pending_players.length; i++){
-      if(this.pending_players[i] == player){
+    for(var i = 0; i < this.pending_players.length; i++) {
+      if(this.pending_players[i] == player) {
         this.pending_players.splice(i,1);
         break;
       }
     }
     // Remove player from player list
-    for(var i = 0; i < this.players.length; i++){
-      if(this.players[i] == player){
+    for(var i = 0; i < this.players.length; i++) {
+      if(this.players[i] == player) {
         this.players.splice(i,1);
         break;
       }
@@ -202,8 +201,8 @@ function CAH() {
     this.inactive_players.push(player);
     player.inactive_count = 0;
     // If the player who left was czar, start a new round
-    if(player == this.czar && this.game_state != GAME_STATE_SHOWING_WINNER){
-      if(this.game_state == GAME_STATE_PLAYING_WHITE_CARDS){
+    if(player == this.czar && this.game_state != GAME_STATE_SHOWING_WINNER) {
+      if(this.game_state == GAME_STATE_PLAYING_WHITE_CARDS) {
         this.giveBackCards();
       }
       this.startRound();
@@ -216,19 +215,19 @@ function CAH() {
   };
 
   this.giveBackCards = function() {
-    for(var i=0; i<this.played_cards.length; i++){
+    for(var i=0; i<this.played_cards.length; i++) {
       card = this.played_cards[i];
       var all_players = this.players.concat(this.inactive_players)
       var given = false;
-      for(var j = 0; j < all_players.length; j++){
+      for(var j = 0; j < all_players.length; j++) {
         var player = all_players[j];
-        if(player.id == card.ownerID){
+        if(player.id == card.ownerID) {
           player.hand.push(card);
           given = true;
           this.sendDeal(player.socket, card.id, card.text);
         }
       }
-      if(!given){
+      if(!given) {
         this.white_graveyard.push(card);
       }
     }
@@ -238,8 +237,7 @@ function CAH() {
   this.drawWhiteCard = function() {
     var i = Math.floor(Math.random() * this.white_deck.length);
     var result = this.white_deck.splice(i, 1)[0];
-    if(this.white_deck.length == 0)
-    {
+    if(this.white_deck.length == 0) {
       this.white_deck = this.white_graveyard;
       this.white_graveyard = [];
     }
@@ -250,8 +248,7 @@ function CAH() {
     var i = Math.floor(Math.random() * this.black_deck.length);
     var c = this.black_deck.splice(i, 1)[0];
     this.black_graveyard.push(c);
-    if(this.black_deck.length == 0)
-    {
+    if(this.black_deck.length == 0) {
       this.black_deck = this.black_graveyard;
       this.black_graveyard = [];
     }
@@ -264,10 +261,10 @@ function CAH() {
     }
   };
 
-  this.flipWCard = function(id){
-    for(var i = 0; i < this.played_cards.length; i++){
+  this.flipWCard = function(id) {
+    for(var i = 0; i < this.played_cards.length; i++) {
       var c = this.played_cards[i];
-      if(c.id == id){
+      if(c.id == id) {
         c.flipped = true;
       }
     }
@@ -277,7 +274,7 @@ function CAH() {
   this.chooseCzar = function() {
     var player = this.czar_order.shift();
     this.czar_order.push(player);
-    while(player.active == false){
+    while(player.active == false) {
       player = this.czar_order.shift();
       this.czar_order.push(player)
     }
@@ -287,12 +284,12 @@ function CAH() {
 
   this.startRound = function() {
     this.displayClearCards();
-    for(var i = 0; i < this.played_cards.length; i++){
+    for(var i = 0; i < this.played_cards.length; i++) {
       this.white_graveyard.push(this.played_cards[i]);
     }
     this.played_cards = [];
-    if(this.players.length < 3){
-      for(var i=0; i<this.players.length; i++){
+    if(this.players.length < 3) {
+      for(var i=0; i<this.players.length; i++) {
         var player = this.players[i];
         // TODO: this should probably be PLAYER_STATE_WAIT_FOR_NEXT_ROUND
         // but I'm leaving it as is for now
@@ -302,8 +299,8 @@ function CAH() {
       return;
     }
     // Increment inactive count
-    for(var i = 0; i < this.inactive_players.length; i++){
-      if(this.inactive_players[i].inactive_count < MAX_INACTIVE_ROUNDS){
+    for(var i = 0; i < this.inactive_players.length; i++) {
+      if(this.inactive_players[i].inactive_count < MAX_INACTIVE_ROUNDS) {
         this.inactive_players[i].inactive_count++;
       }
       else{
@@ -314,9 +311,9 @@ function CAH() {
     this.pending_players = this.players.slice();
     this.czar = this.chooseCzar();
     this.game_state = GAME_STATE_PLAYING_WHITE_CARDS;
-    for(var i=0; i<this.players.length; i++){
+    for(var i=0; i<this.players.length; i++) {
       var player = this.players[i];
-      if(player == this.czar){
+      if(player == this.czar) {
         this.sendState(player.socket, PLAYER_STATE_CZAR_WAIT);
       } else {
         this.sendState(player.socket, PLAYER_STATE_PLAY_WHITE_CARD);
@@ -337,7 +334,7 @@ function CAH() {
     }
   }
 
-  this.newPlayerID = function(){
+  this.newPlayerID = function() {
     var result = this.next_player_id;
     this.next_player_id++;
     return result;
@@ -368,14 +365,14 @@ function CAH() {
       this.player_count++;
       this.displayAddPlayer(player);
     }
-    if(this.game_state == GAME_STATE_PLAYING_WHITE_CARDS){
+    if(this.game_state == GAME_STATE_PLAYING_WHITE_CARDS) {
       this.fillHand(player);
       this.sendState(player.socket, PLAYER_STATE_PLAY_WHITE_CARD);
     }
     else {
       this.sendState(player.socket, PLAYER_STATE_WAIT_FOR_NEXT_ROUND);
     }
-    if(this.player_count == 3 && this.game_state == GAME_STATE_NOT_STARTED) { //TODO
+    if(this.player_count == 3 && this.game_state == GAME_STATE_NOT_STARTED) {
       this.startRound();
     }
   };
@@ -385,7 +382,7 @@ function CAH() {
     var ip = socketIP(socket)
     for(var i = 0; i < this.inactive_players.length; i++) {
       if(this.inactive_players[i].name == name &&
-         this.inactive_players[i].ip == ip){
+         this.inactive_players[i].ip == ip) {
         var player = this.inactive_players.splice(i,1)[0]
         player.socket = socket;
         this.addPlayer(player, true)
@@ -400,96 +397,85 @@ function CAH() {
     this.displayUpdatePlayerScore(player);
   };
 
-  this.displayClearCards = function(){
-    for(var i = 0; i < this.displays.length; i++)
-    {
+  this.displayClearCards = function() {
+    for(var i = 0; i < this.displays.length; i++) {
       var d = this.displays[i];
       this.sendClearCards(d);
     }
   };
 
-  this.displaySetBCard = function(card){
-    for(var i = 0; i < this.displays.length; i++)
-    {
+  this.displaySetBCard = function(card) {
+    for(var i = 0; i < this.displays.length; i++) {
       var d = this.displays[i];
       this.sendSetBCard(d, card.id, card.text);
     }
   };
 
-  this.displayAddWCard = function(card){
-    for(var i = 0; i < this.displays.length; i++)
-    {
+  this.displayAddWCard = function(card) {
+    for(var i = 0; i < this.displays.length; i++) {
       var d = this.displays[i];
       this.sendAddWCard(d, card.id, card.text);
     }
   };
 
-  this.displaySetWinner = function(name){
-    for(var i = 0; i < this.displays.length; i++)
-    {
+  this.displaySetWinner = function(name) {
+    for(var i = 0; i < this.displays.length; i++) {
       var d = this.displays[i];
       this.sendSetWinner(d, name);
     }
   };
 
-  this.displayFlipWCard = function(id){
-    for(var i = 0; i < this.displays.length; i++)
-    {
+  this.displayFlipWCard = function(id) {
+    for(var i = 0; i < this.displays.length; i++) {
       var d = this.displays[i];
       this.sendFlipWCard(d, id);
     }
   };
 
-  this.displayUpdatePlayerScore = function(player){
-    for(var i = 0; i < this.displays.length; i++)
-    {
+  this.displayUpdatePlayerScore = function(player) {
+    for(var i = 0; i < this.displays.length; i++) {
       var d = this.displays[i];
       this.sendSetPlayerScore(d, player.id, player.score);
     }
   };
 
-  this.displayAddPlayer = function(player){
-    for(var i = 0; i < this.displays.length; i++)
-    {
+  this.displayAddPlayer = function(player) {
+    for(var i = 0; i < this.displays.length; i++) {
       var d = this.displays[i];
       this.sendAddPlayer(d, player.name, player.id);
       this.sendSetPlayerScore(d, player.id, 0);
     }
   };
 
-  this.displayRemovePlayer = function(player){
-    for(var i = 0; i < this.displays.length; i++)
-    {
+  this.displayRemovePlayer = function(player) {
+    for(var i = 0; i < this.displays.length; i++) {
       var d = this.displays[i];
       this.sendRemovePlayer(d, player.id);
     }
   };
 
-  this.displayDeactivatePlayer = function(player){
-    for(var i = 0; i < this.displays.length; i++)
-    {
+  this.displayDeactivatePlayer = function(player) {
+    for(var i = 0; i < this.displays.length; i++) {
       var d = this.displays[i];
       this.sendDeactivatePlayer(d, player.id);
     }
   };
 
-  this.displayActivatePlayer = function(player){
-    for(var i = 0; i < this.displays.length; i++)
-    {
+  this.displayActivatePlayer = function(player) {
+    for(var i = 0; i < this.displays.length; i++) {
       var d = this.displays[i];
       this.sendActivatePlayer(d, player.id);
     }
   };
 
-  this.displayChooseCzar = function(player){
-    for(var i = 0; i < this.displays.length; i++)
-    {
+  this.displayChooseCzar = function(player) {
+    for(var i = 0; i < this.displays.length; i++) {
       var d = this.displays[i];
       this.sendChooseCzar(d, player.id);
     }
   };
 
-  this.setUpDisplay = function(socket){
+  this.setUpDisplay = function(socket) {
     for(var i = 0; i < this.players.length; i++) {
       var player = this.players[i];
       this.sendAddPlayer(socket, player.name, player.id);
@@ -501,11 +487,11 @@ function CAH() {
     for(var i = 0; i < this.played_cards.length; i++) {
       var card = this.played_cards[i];
       this.sendAddWCard(socket, card.id, card.text);
-      if(card.flipped){
+      if(card.flipped) {
         this.sendFlipWCard(socket, card.id);
       }
     }
-    if(this.czar != null){
+    if(this.czar != null) {
       this.sendChooseCzar(socket, this.czar.id);
     }
     this.sendSetWinner(socket, this.winner);
@@ -519,10 +505,8 @@ function CAH() {
   };
 
   this.removeDisplay = function(socket) {
-    for(var i = 0; i < this.displays.length; i++)
-    {
-      if(this.displays[i] == socket)
-      {
+    for(var i = 0; i < this.displays.length; i++) {
+      if(this.displays[i] == socket) {
         this.displays.splice(i,1);
         break;
       }
@@ -531,7 +515,7 @@ function CAH() {
 
   this.czarPhase = function() {
     this.sendState(this.czar.socket, PLAYER_STATE_CZAR_CHOOSE);
-    for(var i = 0; i < this.played_cards.length; i++){
+    for(var i = 0; i < this.played_cards.length; i++) {
       this.sendDeal(this.czar.socket,(-1) * this.played_cards[i].id,
         this.played_cards[i].text);
     }
@@ -553,8 +537,8 @@ function CAH() {
           this.displayAddWCard(this.played_cards[i]);
           this.displayFlipWCard(this.played_cards[i].id);
           var all_players = this.players.concat(this.inactive_players)
-          for(var j = 0; j < all_players.length; j++){
-            if(all_players[j].id == this.played_cards[i].ownerID){
+          for(var j = 0; j < all_players.length; j++) {
+            if(all_players[j].id == this.played_cards[i].ownerID) {
               this.winner = all_players[j].name;
               this.displaySetWinner(this.winner);
               this.setPlayerScore(all_players[j],all_players[j].score + 1);
@@ -569,24 +553,23 @@ function CAH() {
     }
     //Not the czar, just someone playing a card
     else {
-      for(var i = 0; i < player.hand.length; i++){
-        if(player.hand[i].id == id){
+      for(var i = 0; i < player.hand.length; i++) {
+        if(player.hand[i].id == id) {
           var card = player.hand.splice(i, 1)[0];
           var index = i;
         }
       }
-      //TODO: Place card in played_cards randomly and tell display
       var index = Math.floor(Math.random() * (this.played_cards.length + 1));
       //Doesn't remove anything, inserts card at index
       this.played_cards.splice(index,0,card);
       this.sendState(player.socket, PLAYER_STATE_WAIT_FOR_CZAR);
       this.sendRemoveCard(player.socket, id);
       this.displayClearCards();
-      for(var i = 0; i < this.played_cards.length; i++){
+      for(var i = 0; i < this.played_cards.length; i++) {
         this.displayAddWCard(this.played_cards[i]);
       }
-      for(var i = 0; i < this.pending_players.length; i++){
-        if(this.pending_players[i] == player){
+      for(var i = 0; i < this.pending_players.length; i++) {
+        if(this.pending_players[i] == player) {
           this.pending_players.splice(i,1);
         }
       }
@@ -601,52 +584,51 @@ var cah = new CAH();
 cah.getCards();
 
 app.use('/style', express.static('../style'));
-app.get('/', function(req, res){
+app.get('/', function(req, res) {
   res.sendFile('clients/player.html', {'root': '../'});
 
 });
 
-app.get('/display', function(req, res){
+app.get('/display', function(req, res) {
   res.sendFile('clients/display.html', {'root': '../'});
 });
 
-io.on('connection', function(socket){
+io.on('connection', function(socket) {
   console.log("client connected");
   socket.emit('ping', 0);
-  socket.on('join', function(name){
-    if (!NAME_REQUIREMENTS.test(name))
-    {
+  socket.on('join', function(name) {
+    if (!NAME_REQUIREMENTS.test(name)) {
       return;
     }
     //TODO: Make sure the display client can handle rejection
     this.player = cah.activatePlayer(name, socket);
-    if(this.player == null){
+    if(this.player == null) {
       this.player = new Player(name, socket, cah.newPlayerID());
       cah.addPlayer(this.player, false);
     }
   });
-  socket.on('play', function(id){
+  socket.on('play', function(id) {
     cah.playCard(this.player, id);
   });
-  socket.on('czar flip', function(id){
+  socket.on('czar flip', function(id) {
     cah.flipWCard(id);
   });
-  socket.on('disconnect', function(){
-    if(this.player != null){
+  socket.on('disconnect', function() {
+    if(this.player != null) {
       cah.deactivatePlayer(this.player);
     }
     cah.removeDisplay(socket);
   });
-  socket.on('register display', function(){
+  socket.on('register display', function() {
     cah.addDisplay(socket);
   });
-  socket.on('pong', function(name){
-    if(NAME_REQUIREMENTS.test(name)){
+  socket.on('pong', function(name) {
+    if(NAME_REQUIREMENTS.test(name)) {
       this.player = cah.activatePlayer(name, socket);
     }
   });
 });
 
-http.listen(PORT, function(){
+http.listen(PORT, function() {
   console.log('listening on *:1337');
 });
