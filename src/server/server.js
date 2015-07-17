@@ -15,6 +15,17 @@ var MAX_INACTIVE_ROUNDS = 3;
 var NAME_REQUIREMENTS = /[A-Za-z0-9 ]{1,}/;
 var IP = '127.0.0.1'
 
+var GAME_STATE_NOT_STARTED = 0;
+var GAME_STATE_PLAYING_WHITE_CARDS = 1;
+var GAME_STATE_CZAR_CHOOSING = 2;
+var GAME_STATE_SHOWING_WINNER = 3;
+
+var PLAYER_STATE_WAIT_FOR_NEXT_ROUND = 0;
+var PLAYER_STATE_PLAY_WHITE_CARD = 1;
+var PLAYER_STATE_CZAR_WAIT = 2;
+var PLAYER_STATE_WAIT_FOR_CZAR = 3;
+var PLAYER_STATE_CZAR_CHOOSE = 4;
+
 ip(function(err, ip){
   IP = ip;
 });
@@ -35,7 +46,7 @@ function Player(name, socket, id) {
 }
 
 function CAH() {
-  this.game_state = 0;
+  this.game_state = GAME_STATE_NOT_STARTED;
   this.czar = null;
   this.black_card = null;
   this.players = [];
