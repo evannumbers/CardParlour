@@ -202,13 +202,15 @@ function CAH() {
     this.inactive_players.push(player);
     player.inactive_count = 0;
     // If the player who left was czar, start a new round
-    if(player == this.czar && this.game_state != 3){
-      if(this.game_state == 1){
+    if(player == this.czar && this.game_state != GAME_STATE_SHOWING_WINNER){
+      if(this.game_state == GAME_STATE_PLAYING_WHITE_CARDS){
         this.giveBackCards();
       }
       this.startRound();
     }
-    else if(this.pending_players.length == 1 && this.game_state == 1 && this.played_cards.length >= 2) {
+    else if(this.pending_players.length == 1 &&
+            this.game_state == GAME_STATE_PLAYING_WHITE_CARDS &&
+            this.played_cards.length >= 2) {
       this.czarPhase();
     }
   };
@@ -292,7 +294,9 @@ function CAH() {
     if(this.players.length < 3){
       for(var i=0; i<this.players.length; i++){
         var player = this.players[i];
-        this.sendState(player.socket, 3);
+        // TODO: this should probably be PLAYER_STATE_WAIT_FOR_NEXT_ROUND
+        // but I'm leaving it as is for now
+        this.sendState(player.socket, PLAYER_STATE_WAIT_FOR_CZAR);
       }
       setTimeout(this.startRound.bind(this), WAIT_FOR_PLAYERS_TIME);
       return;
@@ -309,13 +313,13 @@ function CAH() {
     }
     this.pending_players = this.players.slice();
     this.czar = this.chooseCzar();
-    this.game_state = 1;
+    this.game_state = GAME_STATE_PLAYING_WHITE_CARDS;
     for(var i=0; i<this.players.length; i++){
       var player = this.players[i];
       if(player == this.czar){
-        this.sendState(player.socket, 2);
+        this.sendState(player.socket, PLAYER_STATE_CZAR_WAIT);
       } else {
-        this.sendState(player.socket, 1);
+        this.sendState(player.socket, PLAYER_STATE_PLAY_WHITE_CARD);
       }
     }
     this.fillHands();
@@ -347,7 +351,8 @@ function CAH() {
 
   this.addPlayer = function(player, already_here) {
     if(!already_here && this.player_count >= MAX_PLAYERS) {
-      this.sendState(player.socket, 0);
+      // TODO: Does the player handle this?
+      this.sendState(player.socket, PLAYER_STATE_WAIT_FOR_NEXT_ROUND);
       console.log("Max players reached; new player rejected");
       return;
     }
@@ -363,14 +368,14 @@ function CAH() {
       this.player_count++;
       this.displayAddPlayer(player);
     }
-    if(this.game_state == 1){
+    if(this.game_state == GAME_STATE_PLAYING_WHITE_CARDS){
       this.fillHand(player);
-      this.sendState(player.socket, 1);
+      this.sendState(player.socket, PLAYER_STATE_PLAY_WHITE_CARD);
     }
     else {
-      this.sendState(player.socket, 0);
+      this.sendState(player.socket, PLAYER_STATE_WAIT_FOR_NEXT_ROUND);
     }
-    if(this.player_count == 3 && this.game_state == 0) { //TODO
+    if(this.player_count == 3 && this.game_state == GAME_STATE_NOT_STARTED) { //TODO
       this.startRound();
     }
   };
@@ -525,12 +530,12 @@ function CAH() {
   };
 
   this.czarPhase = function() {
-    this.sendState(this.czar.socket, 4);
+    this.sendState(this.czar.socket, PLAYER_STATE_CZAR_CHOOSE);
     for(var i = 0; i < this.played_cards.length; i++){
       this.sendDeal(this.czar.socket,(-1) * this.played_cards[i].id,
         this.played_cards[i].text);
     }
-    this.game_state = 2;
+    this.game_state = GAME_STATE_CZAR_CHOOSING;
   };
 
   this.cleanUpWinner = function() {
@@ -559,7 +564,7 @@ function CAH() {
           break;
         }
       }
-      this.game_state = 3;
+      this.game_state = GAME_STATE_SHOWING_WINNER;
       setTimeout(this.cleanUpWinner.bind(this), WINNER_TIME);
     }
     //Not the czar, just someone playing a card
@@ -574,7 +579,7 @@ function CAH() {
       var index = Math.floor(Math.random() * (this.played_cards.length + 1));
       //Doesn't remove anything, inserts card at index
       this.played_cards.splice(index,0,card);
-      this.sendState(player.socket, 3);
+      this.sendState(player.socket, PLAYER_STATE_WAIT_FOR_CZAR);
       this.sendRemoveCard(player.socket, id);
       this.displayClearCards();
       for(var i = 0; i < this.played_cards.length; i++){
