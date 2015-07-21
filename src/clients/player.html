@@ -235,11 +235,11 @@
       /* Event handler for when the clients game state changes */
       socket.on('update state', function(msg) {
 
-        messages = ["Please wait while we finish this round",
-                    "Please select a card to play",
-                    "You are the card Czar, please wait for the other players...",
-                    "Please wait for the card Czar to choose a card...",
-                    "You are the card Czar, please choose the winning card"];
+        messages = ["please wait for the next round to begin.",
+                    "please select a card to play.",
+                    "you are the Card Czar; please wait for the other players to play.",
+                    "please wait for the Card Czar to choose a winner.",
+                    "you are the Card Czar; please choose the winning card."];
 
         /* Update header with new state */
         document.getElementById("header").innerHTML = (client.name + ", "

@@ -12,7 +12,7 @@ var MAX_PLAYERS = 10;
 var WINNER_TIME = 5000;
 var WAIT_FOR_PLAYERS_TIME = 3000;
 var MAX_INACTIVE_ROUNDS = 3;
-var NAME_REQUIREMENTS = /[A-Za-z0-9 ]{1,}/;
+var NAME_REQUIREMENTS = /^[A-Za-z0-9]+([A-Za-z0-9 ]+[A-Za-z0-9])?$/;
 var IP = '127.0.0.1'
 
 var GAME_STATE_NOT_STARTED = 0;
@@ -74,7 +74,7 @@ function CAH() {
     var filePath = path.join(__dirname, '../server/cah/cards/combo.txt');
     var self = this;
     fs.readFile(filePath, {encoding: 'utf-8'}, function(err, data) {
-      if (!err) {
+      if(!err) {
         data = data.split("\n");
         for(var i in data) {
           var line = data[i];
@@ -529,7 +529,8 @@ function CAH() {
   };
 
   this.playCard = function(player, id) {
-    if(id < 0 && player == this.czar) {
+    if(id < 0 && player == this.czar &&
+       this.game_state == GAME_STATE_CZAR_CHOOSING) {
       //The Czar selects the winner
       this.displayClearCards();
       for(var i = 0; i < this.played_cards.length; i++) {
@@ -548,11 +549,15 @@ function CAH() {
           break;
         }
       }
+      for(var i = 0; i < this.players.length; i++){
+        this.sendState(this.players[i].socket,
+                       PLAYER_STATE_WAIT_FOR_NEXT_ROUND);
+      }
       this.game_state = GAME_STATE_SHOWING_WINNER;
       setTimeout(this.cleanUpWinner.bind(this), WINNER_TIME);
     }
     //Not the czar, just someone playing a card
-    else {
+    else if(this.game_state == GAME_STATE_PLAYING_WHITE_CARDS) {
       for(var i = 0; i < player.hand.length; i++) {
         if(player.hand[i].id == id) {
           var card = player.hand.splice(i, 1)[0];
@@ -597,7 +602,9 @@ io.on('connection', function(socket) {
   console.log("client connected");
   socket.emit('ping', 0);
   socket.on('join', function(name) {
-    if (!NAME_REQUIREMENTS.test(name)) {
+    console.log('|'+name+'|');
+    if(!NAME_REQUIREMENTS.test(name)) {
+      console.log("OH NO!")
       return;
     }
     //TODO: Make sure the display client can handle rejection
