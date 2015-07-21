@@ -602,9 +602,7 @@ io.on('connection', function(socket) {
   console.log("client connected");
   socket.emit('ping', 0);
   socket.on('join', function(name) {
-    console.log('|'+name+'|');
     if(!NAME_REQUIREMENTS.test(name)) {
-      console.log("OH NO!")
       return;
     }
     //TODO: Make sure the display client can handle rejection
