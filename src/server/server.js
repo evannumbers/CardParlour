@@ -28,6 +28,8 @@ var PLAYER_STATE_CZAR_CHOOSE = 4;
 
 ip(function(err, ip) {
   IP = ip;
+  var url = 'http://' + IP + ':' + PORT + '/display';
+  console.log('Display hosted at ' + url);
 });
 
 function socketIP(socket) {
@@ -635,5 +637,5 @@ io.on('connection', function(socket) {
 });
 
 http.listen(PORT, function() {
-  console.log('listening on *:1337');
+  console.log('HTTP Server Listening');
 });
