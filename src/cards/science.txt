@@ -1,0 +1,30 @@
+B|1|A study published in Nature this week found that ________ is good for you in small doses.
+B|1|Hey there, Young Scientists! Put on your labcoats and strap on your safety goggles, because today we’re learning about ________!
+B|2|In an attempt to recreate conditions just after the Big Bang, physicists at the LHC are observing collisions between ________ and ________.
+B|2|In line with our predictions, we find a robust correlation between ________ and ________ (p < .05).
+B|1|In what's being hailed as a major breakthrough, scientists have synthesized ________ in the lab.
+B|2|Today on Mythbusters, we find out how long ________ can withstand ________.
+B|1|What really killed the dinosaurs?
+W|0|3.7 billion years of evolution.
+W|0|A 0.7 waist-to-hip ratio.
+W|0|A supermassive black hole.
+W|0|Achieving reproductive success.
+W|0|Being knowledgeable in a narrow domain that nobody understands or cares about.
+W|0|David Attenborough watching us mate.
+W|0|Developing secondary sex characteristics.
+W|0|Driving into a tornado to learn about tornadoes.
+W|0|Electroejaculating a capuchin monkey.
+W|0|Evolving a labyrinthine vagina.
+W|0|Explosive decompression.
+W|0|Failing the Turing test.
+W|0|Fun and interesting facts about rocks.
+W|0|Getting really worried about global warming for a few seconds.
+W|0|Infinity.
+W|0|Insufficient serotonin.
+W|0|Oxytocin release via manual stimulation of the nipples.
+W|0|Photosynthesis.
+W|0|Reconciling quantum theory with general relativity.
+W|0|Slowly evaporating.
+W|0|The Sun engulfing the Earth.
+W|0|The quiet majesty of the sea turtle.
+W|0|Uranus.

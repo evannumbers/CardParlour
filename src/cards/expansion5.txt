@@ -1,0 +1,99 @@
+B|1|And today's soup is Cream of ____.
+B|1|Armani suit: $1,000. Dinner for two at that swanky restaurant: $300. The look on her face when you surprise her with ________: priceless.
+B|1|Do the Dew® with our most extreme flavor yet! Get ready for Mountain Dew ________!
+B|1|Do you lack energy? Does it sometimes feel like the whole world is ________? Zoloft.®
+B|1|Don't forget! Beginning this week, Casual Friday will officially become "________ Friday."
+B|1|Get ready for the movie of the summer! One cop plays by the book. The other's only interested in one thing: ________.
+B|1|Having the worst day EVER. #________
+B|2|Heed my voice, mortals! I am the god of ________, and I will not tolerate ________!
+B|1|Help me doctor, I've got ________ in my butt!
+B|1|Here at the Academy for Gifted Children, we allow students to explore ________ at their own pace.
+B|1|Hi MTV! My name is Kendra, I live in Malibu, I'm into ________, and I love to have a good time.
+B|1|Hi, this is Jim from accounting. We noticed a $1,200 charge labeled "________." Can you explain?
+B|1|I don't mean to brag, but they call me the Michael Jordan of ________.
+B|1|In his farewell address, George Washington famously warned Americans about the dangers of ________.
+B|1|In his new action comedy, Jackie Chan must fend off ninjas while also dealing with ________.
+B|1|Life's pretty tough in the fast lane. That's why I never leave the house without ________.
+B|1|Now in bookstores: "The Audacity of ________," by Barack Obama.
+B|2|Patient presents with ________. Likely a result of ________.
+B|1|WHOOO! God damn I love ________!
+B|2|Well if ________ is good enough for ________, it's good enough for me.
+B|1|Well what do you have to say for yourself, Casey? This is the third time you've been sent to the principal's office for ________.
+B|1|What killed my boner?
+B|1|What's making things awkward in the sauna?
+B|1|Why am I broke?
+B|1|Yo' mama so fat she ________!
+W|0|40 acres and a mule.
+W|0|A crazy little thing called love.
+W|0|A disappointing salad.
+W|0|A face full of horse cum.
+W|0|A giant powdery manbaby.
+W|0|A mouthful of potato salad.
+W|0|A one-way ticket to Gary, Indiana.
+W|0|A powered exoskeleton.
+W|0|A reason not to commit suicide.
+W|0|A team of lawyers.
+W|0|A whole new kind of porn.
+W|0|A zero-risk way to make $2,000 from home.
+W|0|AIDS monkeys.
+W|0|All these decorative pillows.
+W|0|An unforgettable quinceañera.
+W|0|An uninterrupted history of imperialism and exploitation.
+W|0|Anal fissures like you wouldn't believe.
+W|0|Ancient Athenian boy-fucking
+W|0|Backwards knees.
+W|0|Being nine years old.
+W|0|Being paralyzed from the neck down.
+W|0|Being worshipped as the one true God.
+W|0|Blackface.
+W|0|Blowjobs for everyone.
+W|0|Boring vaginal sex.
+W|0|Butt stuff.
+W|0|Changing a person's mind with logic and facts.
+W|0|Child support payments.
+W|0|Cutting off a flamingo's legs with garden shears.
+W|0|Daddy's credit card.
+W|0|Deez nuts.
+W|0|Denzel.
+W|0|Doing the right stuff to her nipples.
+W|0|Ejaculating live bees and the bees are angry.
+W|0|Ennui.
+W|0|Figuring out how to have sex with a dolphin.
+W|0|Free ice cream, yo.
+W|0|Genghis Khan's DNA.
+W|0|Getting caught by the police and going to jail.
+W|0|Getting drive-by shot.
+W|0|Getting eaten alive by Guy Fieri.
+W|0|Giant sperm from outer space.
+W|0|Going to a high school reunion on ketamine.
+W|0|Having been dead for a while.
+W|0|Mom's new boyfriend.
+W|0|My boyfriend's stupid penis.
+W|0|My dead son's baseball glove.
+W|0|My first period.
+W|0|Not believing in giraffes.
+W|0|Oil!
+W|0|Out-of-this-world bazongas.
+W|0|P.F. Chang himself.
+W|0|Russian super-tuberculosis.
+W|0|Seeing my village burned and my family slaughtered before my eyes.
+W|0|Seeing things from Hitler's perspective
+W|0|September 11th, 2001.
+W|0|Slowly easing down onto a cucumber.
+W|0|Social justice warriors with flamethrowers of compassion.
+W|0|Some shit-hot guitar licks.
+W|0|The Abercrombie & Fitch lifestyle.
+W|0|The basic suffering that pervades all of existence.
+W|0|The black half of Barack Obama.
+W|0|The eight gay warlocks who dictate the rules of fashion.
+W|0|The ghost of Marlon Brando.
+W|0|The passage of time.
+W|0|The swim team, all at once.
+W|0|The tiger that killed my father.
+W|0|The unbelievable world of mushrooms.
+W|0|The white half of Barack Obama.
+W|0|Too much cocaine.
+W|0|Unrelenting genital punishment.
+W|0|Vegetarian options.
+W|0|Wearing glasses and sounding smart.
+W|0|Western standards of beauty.
